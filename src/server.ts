@@ -8,25 +8,6 @@ import UserRoutes from './routes/UserRoutes';
 import indexRoutes from './routes/indexRoutes';
 import helmet from 'helmet';
 import NEARRoutes from './routes/NEARRoutes';
-// async function connectNEAR() {
-//     const near = await nearAPI.connect({
-//         networkId, nodeUrl, walletUrl,
-//     });
-// }
-
-    async function testNEAR() {
-//    const methodOptions = {
-//      viewMethods: ['nftTotalSupply'],
-//      changeMethods: []
-//    };
-//    const contract = new nearAPI.Contract(
-//     account,
-//      'paras-token-v2.testnet',
-//      methodOptions
-//    );
-    }
-
-
 
     async function connectDB() {
         const MONGO_URI = 'mongodb+srv://efwcwwwwce:7sPtSf8mzuTAqfGx@cluster0.w0ka0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
