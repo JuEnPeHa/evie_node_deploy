@@ -38,75 +38,7 @@ const near_api_js_1 = require("near-api-js");
 const express_1 = require("express");
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
 const { networkId, nodeUrl, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'testnet');
-function getMarketplacesClean(listNftMarketplacesRaw) {
-    let listNftMarketplaces = [];
-    listNftMarketplacesRaw.forEach((marketplace) => {
-        if (marketplace.includes("mintbase") ||
-            marketplace.includes("paras") ||
-            marketplace.includes("neatar") ||
-            marketplace.includes("mintspace")) {
-            listNftMarketplaces.push(marketplace);
-        }
-    });
-    return listNftMarketplaces;
-}
-function getMarketplacesNotEmpties(account, listNftMarketplacesRaw) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let listInternNftMarketplaces = [];
-        for (let index = 0; index < listNftMarketplacesRaw.length; index++) {
-            const element = listNftMarketplacesRaw[index];
-            const supply = yield getNftSupplyForOwnerPrivate(account, element);
-            if (supply != "0") {
-                listInternNftMarketplaces.push(element);
-            }
-        }
-        return listInternNftMarketplaces;
-    });
-}
-function getNftTokensFromListForOwnerPrivate(account, listNftMarketplacesNotEmpties) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let listNfts = [];
-        for (let index = 0; index < listNftMarketplacesNotEmpties.length; index++) {
-            const element = listNftMarketplacesNotEmpties[index];
-            const supply = yield getNftTokensForOwnerPrivate(account, element);
-            listNfts.push(supply);
-        }
-        return listNfts;
-    });
-}
-function getNftSupplyForOwnerPrivate(receivedAccount, receivedContract) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const account = yield near.account(receivedAccount);
-        const contract = new nearAPI.Contract(account, receivedContract, {
-            viewMethods: ['nft_supply_for_owner'],
-            changeMethods: []
-        });
-        // @ts-ignore
-        const supply = yield contract.nft_supply_for_owner({
-            "account_id": receivedAccount
-        });
-        console.log("supply");
-        console.log(supply);
-        return supply;
-    });
-}
-function getNftTokensForOwnerPrivate(receivedAccount, receivedContract) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const account = yield near.account(receivedAccount);
-        const contract = new nearAPI.Contract(account, receivedContract, {
-            viewMethods: ['nft_tokens_for_owner'],
-            changeMethods: []
-        });
-        // @ts-ignore
-        const supply = yield contract.nft_tokens_for_owner({
-            "account_id": receivedAccount
-        });
-        //console.log("supply");
-        //console.log(supply);
-        return supply;
-    });
-}
-//testNEAR2();
+const functionsRpc_1 = require("../utils/functionsRpc");
 const near = new near_api_js_1.Near({
     networkId,
     keyStore: new near_api_js_1.keyStores.InMemoryKeyStore(),
@@ -127,9 +59,9 @@ class NEARRoutes {
             listReceivedContract.forEach((i) => {
                 listReceivedContractTyped.push(i);
             });
-            const listReceivedContractClean = getMarketplacesClean(listReceivedContractTyped);
-            const listReceivedContractNotEmpties = yield getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean);
-            const listTokens = yield getNftTokensFromListForOwnerPrivate(receivedAccount, listReceivedContractNotEmpties);
+            const listReceivedContractClean = functionsRpc_1.FunctionsRpc.getMarketplacesClean(listReceivedContractTyped);
+            const listReceivedContractNotEmpties = yield functionsRpc_1.FunctionsRpc.getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean);
+            const listTokens = yield functionsRpc_1.FunctionsRpc.getNftTokensFromListForOwnerPrivate(receivedAccount, listReceivedContractNotEmpties);
             res.json(listTokens);
         });
     }
@@ -160,6 +92,25 @@ class NEARRoutes {
             // @ts-ignore
             const tokens = yield contract.nft_tokens_for_owner({
                 "account_id": receivedAccount,
+                "from_index": "0",
+                "limit": 100
+            });
+            res.json(tokens);
+        });
+    }
+    getNftTokensBySeries(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { receivedAccount, TokenSeriesId } = req.body;
+            const account = yield near.account(receivedAccount);
+            const contract = new nearAPI.Contract(account, 
+            //"x.paras.near",
+            "paras-token-v2.testnet", {
+                viewMethods: ['nft_tokens_by_series'],
+                changeMethods: []
+            });
+            // @ts-ignore
+            const tokens = yield contract.nft_tokens_by_series({
+                "token_series_id": TokenSeriesId,
                 "from_index": "0",
                 "limit": 100
             });
@@ -202,6 +153,32 @@ class NEARRoutes {
             res.json(series);
         });
     }
+    getNftGetSeriesSingle(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { receivedAccount, TokenSeriesId } = req.body;
+            const account = yield near.account(receivedAccount);
+            const contract = new nearAPI.Contract(account, "paras-token-v2.testnet", {
+                viewMethods: ['nft_get_series_single'],
+                changeMethods: []
+            });
+            // @ts-ignore
+            const series = yield contract.nft_get_series_single({
+                "token_series_id": TokenSeriesId
+            });
+            res.json(series);
+        });
+    }
+    getLandingPage(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let listReceivedContractTyped = [];
+            const { receivedAccount, listReceivedContract } = req.body;
+            listReceivedContract.forEach((i) => {
+                listReceivedContractTyped.push(i);
+            });
+            const finalMembersList = yield functionsRpc_1.FunctionsRpc.getLandingPagePrivate(receivedAccount, listReceivedContractTyped);
+            res.json(finalMembersList);
+        });
+    }
     routes() {
         this.router.get('/getSupply', this.getNftTotalSupply);
         this.router.post('/getSupply', this.getNftTotalSupply);
@@ -213,6 +190,12 @@ class NEARRoutes {
         this.router.post('/getMetadata', this.getNftMetadata);
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
         this.router.post('/getNftGetSeries', this.getNftGetSeries);
+        this.router.get('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
+        this.router.post('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
+        this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
+        this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
+        this.router.get('/getLandingPage', this.getLandingPage);
+        this.router.post('/getLandingPage', this.getLandingPage);
     }
 }
 const nearRoutes = new NEARRoutes();
