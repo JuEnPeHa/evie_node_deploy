@@ -22,24 +22,6 @@ const UserRoutes_1 = __importDefault(require("./routes/UserRoutes"));
 const indexRoutes_1 = __importDefault(require("./routes/indexRoutes"));
 const helmet_1 = __importDefault(require("helmet"));
 const NEARRoutes_1 = __importDefault(require("./routes/NEARRoutes"));
-// async function connectNEAR() {
-//     const near = await nearAPI.connect({
-//         networkId, nodeUrl, walletUrl,
-//     });
-// }
-function testNEAR() {
-    return __awaiter(this, void 0, void 0, function* () {
-        //    const methodOptions = {
-        //      viewMethods: ['nftTotalSupply'],
-        //      changeMethods: []
-        //    };
-        //    const contract = new nearAPI.Contract(
-        //     account,
-        //      'paras-token-v2.testnet',
-        //      methodOptions
-        //    );
-    });
-}
 function connectDB() {
     return __awaiter(this, void 0, void 0, function* () {
         const MONGO_URI = 'mongodb+srv://efwcwwwwce:7sPtSf8mzuTAqfGx@cluster0.w0ka0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';

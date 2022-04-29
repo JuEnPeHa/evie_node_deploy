@@ -63,6 +63,17 @@ function getMarketplacesNotEmpties(account, listNftMarketplacesRaw) {
         return listInternNftMarketplaces;
     });
 }
+function getNftTokensFromListForOwnerPrivate(account, listNftMarketplacesNotEmpties) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let listNfts = [];
+        for (let index = 0; index < listNftMarketplacesNotEmpties.length; index++) {
+            const element = listNftMarketplacesNotEmpties[index];
+            const supply = yield getNftTokensForOwnerPrivate(account, element);
+            listNfts.push(supply);
+        }
+        return listNfts;
+    });
+}
 function getNftSupplyForOwnerPrivate(receivedAccount, receivedContract) {
     return __awaiter(this, void 0, void 0, function* () {
         const account = yield near.account(receivedAccount);
@@ -79,9 +90,25 @@ function getNftSupplyForOwnerPrivate(receivedAccount, receivedContract) {
         return supply;
     });
 }
+function getNftTokensForOwnerPrivate(receivedAccount, receivedContract) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const account = yield near.account(receivedAccount);
+        const contract = new nearAPI.Contract(account, receivedContract, {
+            viewMethods: ['nft_tokens_for_owner'],
+            changeMethods: []
+        });
+        // @ts-ignore
+        const supply = yield contract.nft_tokens_for_owner({
+            "account_id": receivedAccount
+        });
+        //console.log("supply");
+        //console.log(supply);
+        return supply;
+    });
+}
 //testNEAR2();
 const near = new near_api_js_1.Near({
-    networkId: 'testnet',
+    networkId,
     keyStore: new near_api_js_1.keyStores.InMemoryKeyStore(),
     nodeUrl,
     walletUrl,
@@ -95,24 +122,15 @@ class NEARRoutes {
     }
     getNftMetadata(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            //let receivedAccount: string = "";
-            //let listReceivedContract: string[] = [];
-            //let listReceivedContractClean: string[] = [];
-            let listReceivedContractNotEmpties = [];
-            let listTokens = [];
             let listReceivedContractTyped = [];
             const { receivedAccount, listReceivedContract } = req.body;
             listReceivedContract.forEach((i) => {
                 listReceivedContractTyped.push(i);
             });
             const listReceivedContractClean = getMarketplacesClean(listReceivedContractTyped);
-            listReceivedContractNotEmpties = yield getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean);
-            console.log(listReceivedContractNotEmpties);
-            // @ts-ignore
-            //const metadata = contract.nft_metadata({
-            //    
-            //});
-            res.json(listReceivedContractNotEmpties);
+            const listReceivedContractNotEmpties = yield getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean);
+            const listTokens = yield getNftTokensFromListForOwnerPrivate(receivedAccount, listReceivedContractNotEmpties);
+            res.json(listTokens);
         });
     }
     getNftTotalSupply(req, res) {
@@ -168,6 +186,22 @@ class NEARRoutes {
             const { receivedAccount, receivedContract } = req.body;
         });
     }
+    getNftGetSeries(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { receivedAccount } = req.body;
+            const account = yield near.account(receivedAccount);
+            const contract = new nearAPI.Contract(account, "paras-token-v2.testnet", {
+                viewMethods: ['nft_get_series'],
+                changeMethods: []
+            });
+            // @ts-ignore
+            const series = yield contract.nft_get_series({
+                "from_index": "0",
+                "limit": 100
+            });
+            res.json(series);
+        });
+    }
     routes() {
         this.router.get('/getSupply', this.getNftTotalSupply);
         this.router.post('/getSupply', this.getNftTotalSupply);
@@ -177,6 +211,8 @@ class NEARRoutes {
         this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
         this.router.get('/getMetadata', this.getNftMetadata);
         this.router.post('/getMetadata', this.getNftMetadata);
+        this.router.get('/getNftGetSeries', this.getNftGetSeries);
+        this.router.post('/getNftGetSeries', this.getNftGetSeries);
     }
 }
 const nearRoutes = new NEARRoutes();
