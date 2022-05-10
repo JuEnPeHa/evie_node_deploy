@@ -37,7 +37,7 @@ const nearAPI = __importStar(require("near-api-js"));
 const near_api_js_1 = require("near-api-js");
 const express_1 = require("express");
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
-const { networkId, nodeUrl, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'testnet');
+const { networkId, nodeUrl, walletUrl, helperUrl, contractName } = (0, config_1.getConfig)(process.env.NODE_ENV || 'mainnet');
 const functionsRpc_1 = require("../utils/functionsRpc");
 const near = new near_api_js_1.Near({
     networkId,
@@ -157,7 +157,7 @@ class NEARRoutes {
         return __awaiter(this, void 0, void 0, function* () {
             const { receivedAccount, TokenSeriesId } = req.body;
             const account = yield near.account(receivedAccount);
-            const contract = new nearAPI.Contract(account, "paras-token-v2.testnet", {
+            const contract = new nearAPI.Contract(account, "x.paras.near", {
                 viewMethods: ['nft_get_series_single'],
                 changeMethods: []
             });
@@ -171,12 +171,20 @@ class NEARRoutes {
     getLandingPage(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let listReceivedContractTyped = [];
-            const { receivedAccount, listReceivedContract } = req.body;
+            const { listReceivedContract } = req.body;
+            const receivedAccount = contractName;
             listReceivedContract.forEach((i) => {
                 listReceivedContractTyped.push(i);
             });
             const finalMembersList = yield functionsRpc_1.FunctionsRpc.getLandingPagePrivate(receivedAccount, listReceivedContractTyped);
             res.json(finalMembersList);
+        });
+    }
+    getMostSelledCollections(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const receivedAccount = contractName;
+            const limit = req.params.limit || 10;
+            res.json(yield functionsRpc_1.FunctionsRpc.getMostSelledCollectionsPrivate(receivedAccount, limit));
         });
     }
     routes() {
@@ -196,6 +204,7 @@ class NEARRoutes {
         this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.get('/getLandingPage', this.getLandingPage);
         this.router.post('/getLandingPage', this.getLandingPage);
+        this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollections);
     }
 }
 const nearRoutes = new NEARRoutes();
