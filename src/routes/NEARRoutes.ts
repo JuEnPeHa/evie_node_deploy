@@ -5,7 +5,7 @@ import { parseContract } from 'near-contract-parser';
 import { Request, Response, Router } from 'express';
 import NEARRequest from '../models/NEARRequest';
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
-const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'testnet');
+const { networkId, nodeUrl, walletUrl, helperUrl, contractName } = getConfig(process.env.NODE_ENV || 'mainnet');
 import { FunctionsRpc } from '../utils/functionsRpc';
 
 const near = new Near({
@@ -142,7 +142,7 @@ class NEARRoutes {
         const account = await near.account(receivedAccount);
         const contract: nearAPI.Contract = new nearAPI.Contract(
             account,
-            "paras-token-v2.testnet",
+            "x.paras.near",
             {
                 viewMethods: ['nft_get_series_single'],
                 changeMethods: []
@@ -157,12 +157,19 @@ class NEARRoutes {
 
    async getLandingPage(req: Request, res: Response): Promise<void> {
        let listReceivedContractTyped: string[] = [];
-    const { receivedAccount, listReceivedContract } = req.body;
+    const { listReceivedContract } = req.body;
+    const receivedAccount = contractName;
     listReceivedContract.forEach( (i: string) => {
         listReceivedContractTyped.push(i);
     });
     const finalMembersList = await FunctionsRpc.getLandingPagePrivate(receivedAccount, listReceivedContractTyped);
     res.json(finalMembersList);
+}
+
+async getMostSelledCollections(req: Request, res: Response): Promise<void> {
+    const receivedAccount = contractName;
+    const limit = req.params.limit || 10;
+    res.json(await FunctionsRpc.getMostSelledCollectionsPrivate(receivedAccount, (limit as number)));
 }
 
     routes() {
@@ -182,6 +189,7 @@ class NEARRoutes {
         this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.get('/getLandingPage', this.getLandingPage);
         this.router.post('/getLandingPage', this.getLandingPage);
+        this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollections);
     }
 }
 
