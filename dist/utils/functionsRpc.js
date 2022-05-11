@@ -217,6 +217,7 @@ var FunctionsRpc;
             //     }
             // }
             //return listCollections;
+            console.log("listCollections:" + listCollections.data.results.length);
             return listCollections;
         });
     }
