@@ -167,9 +167,12 @@ class NEARRoutes {
 }
 
 async getMostSelledCollections(req: Request, res: Response): Promise<void> {
-    const receivedAccount = contractName;
+    //const receivedAccount = contractName;
     const limit = req.params.limit || 10;
-    res.json(await FunctionsRpc.getMostSelledCollectionsPrivate(receivedAccount, (limit as number)));
+    res.json(await FunctionsRpc.getMostSelledCollectionsPrivate(
+        //receivedAccount, 
+        (limit as number),
+        ));
 }
 
     routes() {

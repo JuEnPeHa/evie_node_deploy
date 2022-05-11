@@ -165,23 +165,58 @@ var FunctionsRpc;
         return __awaiter(this, void 0, void 0, function* () {
             const { data } = yield ParasAPI_1.default.get(`/collections?collection_id=${collectionId}`);
             console.log(data.data.results[0].collection);
-            return data;
+            return data.data.results;
         });
     }
     FunctionsRpc.getNftSingleCollectionWithFirstAPI = getNftSingleCollectionWithFirstAPI;
-    function getMostSelledCollectionsPrivate(receivedAccount, limit) {
+    function getMostSelledCollectionsPrivate(
+    //receivedAccount: string,
+    limit) {
         return __awaiter(this, void 0, void 0, function* () {
             const collectionsRAW = yield getParasCollectionsWithAPI(limit);
-            //console.log(collectionsRAW);
-            let listCollections = [];
-            for (let i = 0; i < collectionsRAW.length; i++) {
-                const element = collectionsRAW[i];
-                console.log(element.collection_id);
+            console.log("collectionsRAW");
+            console.log(collectionsRAW);
+            let dataEvie = {
+                "results": [],
+                "skip": 0,
+                "limit": 0,
+            };
+            let listCollections = {
+                "data": dataEvie,
+                "status": 1,
+            };
+            //listCollections.data = {} as DataEvie;
+            for (let index = 0; index < collectionsRAW.length; index++) {
+                const element = collectionsRAW[index];
                 let preToken = yield getNftSingleCollectionWithFirstAPI(element.collection_id);
-                if (preToken != null) {
-                    listCollections.push(preToken);
-                }
+                // console.log(preToken);
+                // console.log("preToken");
+                console.log(preToken);
+                listCollections.data.results.push({
+                    "_id": element._id,
+                    "collection_id": element.collection_id,
+                    "collection": preToken[0].collection,
+                    "volume": element.volume,
+                    "volume_usd": element.volume_usd,
+                    "total_sales": element.total_sales,
+                    "total_owners": element.total_owners,
+                    "total_cards": element.total_cards,
+                    "avg_price": element.avg_price,
+                    "avg_price_usd": element.avg_price_usd,
+                    "description": preToken[0].description || "",
+                    "media": preToken[0].media || "",
+                    "creator_id": preToken[0].creator_id,
+                });
             }
+            // for (let i = 0; i < collectionsRAW.length; i++) {
+            //     const element = collectionsRAW[i];
+            //     console.log(element.collection_id);
+            //     let preToken = await getNftSingleCollectionWithFirstAPI(element.collection_id);
+            //     if (preToken != null) {
+            //         listCollections.push(preToken);
+            //     }
+            // }
+            //return listCollections;
             return listCollections;
         });
     }

@@ -182,9 +182,11 @@ class NEARRoutes {
     }
     getMostSelledCollections(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const receivedAccount = contractName;
+            //const receivedAccount = contractName;
             const limit = req.params.limit || 10;
-            res.json(yield functionsRpc_1.FunctionsRpc.getMostSelledCollectionsPrivate(receivedAccount, limit));
+            res.json(yield functionsRpc_1.FunctionsRpc.getMostSelledCollectionsPrivate(
+            //receivedAccount, 
+            limit));
         });
     }
     routes() {

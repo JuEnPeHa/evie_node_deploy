@@ -8,12 +8,12 @@ export interface ParasCollectionAPIResponse {
 }
 
 export interface Data {
-    results: Result[];
+    results: Result_p[];
     skip:    number;
     limit:   number;
 }
 
-export interface Result {
+export interface Result_p {
     _id:           string;
     collection_id: string;
     collection:    string;
