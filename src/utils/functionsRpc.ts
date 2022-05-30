@@ -140,7 +140,7 @@ export async function getLandingPageMintbasePrivate() {
     }`;
     let rdonsmvk = await graphqlQuery(query);
     console.log("rdonsmvk: " + rdonsmvk);
-    return rdonsmvk;
+    return rdonsmvk.mb_views_top_stores;
 }
 
 
