@@ -161,7 +161,6 @@ var FunctionsRpc;
     {
         mb_views_top_stores(limit: 100) {
             store_id
-            __typename
 		    total
 		    owner
 		    name
@@ -169,7 +168,7 @@ var FunctionsRpc;
     }`;
             let rdonsmvk = yield graphqlQuery(query);
             console.log("rdonsmvk: " + rdonsmvk);
-            return rdonsmvk;
+            return rdonsmvk.mb_views_top_stores;
         });
     }
     FunctionsRpc.getLandingPageMintbasePrivate = getLandingPageMintbasePrivate;
