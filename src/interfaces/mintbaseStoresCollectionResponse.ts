@@ -6,7 +6,7 @@ export interface MintbaseStoresCollection {
 
 export interface MBViewsTopStore {
     store_id:   string;
-    __typename: Typename;
+//    __typename: Typename;
     total:      number;
     owner:      string;
     name:       string;
