@@ -132,7 +132,6 @@ export async function getLandingPageMintbasePrivate() {
     {
         mb_views_top_stores(limit: 100) {
             store_id
-            __typename
 		    total
 		    owner
 		    name
