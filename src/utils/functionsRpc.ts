@@ -6,6 +6,9 @@ import {ParasStatsAPIResponse, ParasStatsArray} from '../interfaces/parasStatsRe
 import parasAPI from '../models/ParasAPI';
 import { ParasCollectionAPIResponse, ParasCollectionArray } from '../interfaces/parasCollectionAPIResponse';
 import { DataEvie, EvieAPICollectionResponse, ResultEvie } from '../interfaces/evieResponse';
+import { request, gql } from 'graphql-request'
+import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollectionResponse';
+
 const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'mainnet');
 
 export module FunctionsRpc {
@@ -100,7 +103,7 @@ export async function getNftTokensForOwnerPrivate(
     return supply;
 };
 
-export async function getLandingPagePrivate(
+export async function getLandingPageParasPrivate(
     receivedAccount: string,
     listMarketplacesParas: string[]
 ) {
@@ -122,6 +125,25 @@ export async function getLandingPagePrivate(
     }
     return listLandingPage;
 };
+
+export async function getLandingPageMintbasePrivate() {
+    let listLandingPage = [];
+    const query = gql`
+    {
+        mb_views_top_stores(limit: 100) {
+            store_id
+            __typename
+		    total
+		    owner
+		    name
+        }
+    }`;
+    let rdonsmvk = await graphqlQuery(query);
+    console.log("rdonsmvk: " + rdonsmvk);
+    return rdonsmvk;
+}
+
+
 
 export async function getParasCollectionsWithAPI(limit: number) {
     const { data } = await statsParasAPI.get<ParasStatsArray>('/');
@@ -256,6 +278,11 @@ export async function getNftTokensBySeriesPrivate(receivedAccount: string, Token
          });
             return tokens;
 };
+
+export async function graphqlQuery(query: string) {
+    const dassdsad = await request<MintbaseStoresCollection>('https://mintbase-mainnet.hasura.app/v1/graphql', query)
+    return dassdsad;
+}
 
 };
 

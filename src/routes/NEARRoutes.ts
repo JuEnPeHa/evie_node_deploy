@@ -155,25 +155,30 @@ class NEARRoutes {
         res.json(series);
    }
 
-   async getLandingPage(req: Request, res: Response): Promise<void> {
+   async getLandingPageParas(req: Request, res: Response): Promise<void> {
        let listReceivedContractTyped: string[] = [];
     const { listReceivedContract } = req.body;
     const receivedAccount = contractName;
     listReceivedContract.forEach( (i: string) => {
         listReceivedContractTyped.push(i);
     });
-    const finalMembersList = await FunctionsRpc.getLandingPagePrivate(receivedAccount, listReceivedContractTyped);
+    const finalMembersList = await FunctionsRpc.getLandingPageParasPrivate(receivedAccount, listReceivedContractTyped);
     res.json(finalMembersList);
 }
 
-async getMostSelledCollections(req: Request, res: Response): Promise<void> {
+    async getMostSelledCollections(req: Request, res: Response): Promise<void> {
     //const receivedAccount = contractName;
     const limit = req.params.limit || 10;
     res.json(await FunctionsRpc.getMostSelledCollectionsPrivate(
         //receivedAccount, 
         (limit as number),
         ));
-}
+    }
+
+    async getLandingPageMintbase(req: Request, res: Response) {
+        const saibdcnjs = await FunctionsRpc.getLandingPageMintbasePrivate();
+        res.json(saibdcnjs);
+    }
 
     routes() {
         this.router.get('/getSupply', this.getNftTotalSupply);
@@ -190,8 +195,12 @@ async getMostSelledCollections(req: Request, res: Response): Promise<void> {
         this.router.post('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
         this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
-        this.router.get('/getLandingPage', this.getLandingPage);
-        this.router.post('/getLandingPage', this.getLandingPage);
+        this.router.get('/getLandingPageParas', this.getLandingPageParas);
+        this.router.post('/getLandingPageParas', this.getLandingPageParas);
+
+        this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
+        this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
+
         this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollections);
     }
 }

@@ -41,6 +41,7 @@ const near_api_js_1 = require("near-api-js");
 const config_1 = require("../config");
 const StatsParasAPI_1 = __importDefault(require("../models/StatsParasAPI"));
 const ParasAPI_1 = __importDefault(require("../models/ParasAPI"));
+const graphql_request_1 = require("graphql-request");
 const { networkId, nodeUrl, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'mainnet');
 var FunctionsRpc;
 (function (FunctionsRpc) {
@@ -130,7 +131,7 @@ var FunctionsRpc;
     }
     FunctionsRpc.getNftTokensForOwnerPrivate = getNftTokensForOwnerPrivate;
     ;
-    function getLandingPagePrivate(receivedAccount, listMarketplacesParas) {
+    function getLandingPageParasPrivate(receivedAccount, listMarketplacesParas) {
         return __awaiter(this, void 0, void 0, function* () {
             //let listExistentIds = [];
             let listLandingPage = [];
@@ -151,8 +152,27 @@ var FunctionsRpc;
             return listLandingPage;
         });
     }
-    FunctionsRpc.getLandingPagePrivate = getLandingPagePrivate;
+    FunctionsRpc.getLandingPageParasPrivate = getLandingPageParasPrivate;
     ;
+    function getLandingPageMintbasePrivate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let listLandingPage = [];
+            const query = (0, graphql_request_1.gql) `
+    {
+        mb_views_top_stores(limit: 100) {
+            store_id
+            __typename
+		    total
+		    owner
+		    name
+        }
+    }`;
+            let rdonsmvk = yield graphqlQuery(query);
+            console.log("rdonsmvk: " + rdonsmvk);
+            return rdonsmvk;
+        });
+    }
+    FunctionsRpc.getLandingPageMintbasePrivate = getLandingPageMintbasePrivate;
     function getParasCollectionsWithAPI(limit) {
         return __awaiter(this, void 0, void 0, function* () {
             const { data } = yield StatsParasAPI_1.default.get('/');
@@ -289,6 +309,13 @@ var FunctionsRpc;
     }
     FunctionsRpc.getNftTokensBySeriesPrivate = getNftTokensBySeriesPrivate;
     ;
+    function graphqlQuery(query) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const dassdsad = yield (0, graphql_request_1.request)('https://mintbase-mainnet.hasura.app/v1/graphql', query);
+            return dassdsad;
+        });
+    }
+    FunctionsRpc.graphqlQuery = graphqlQuery;
 })(FunctionsRpc = exports.FunctionsRpc || (exports.FunctionsRpc = {}));
 ;
 // async function getParasCollectionsWithAPI(limit: number) {

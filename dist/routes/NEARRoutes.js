@@ -168,7 +168,7 @@ class NEARRoutes {
             res.json(series);
         });
     }
-    getLandingPage(req, res) {
+    getLandingPageParas(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let listReceivedContractTyped = [];
             const { listReceivedContract } = req.body;
@@ -176,7 +176,7 @@ class NEARRoutes {
             listReceivedContract.forEach((i) => {
                 listReceivedContractTyped.push(i);
             });
-            const finalMembersList = yield functionsRpc_1.FunctionsRpc.getLandingPagePrivate(receivedAccount, listReceivedContractTyped);
+            const finalMembersList = yield functionsRpc_1.FunctionsRpc.getLandingPageParasPrivate(receivedAccount, listReceivedContractTyped);
             res.json(finalMembersList);
         });
     }
@@ -187,6 +187,12 @@ class NEARRoutes {
             res.json(yield functionsRpc_1.FunctionsRpc.getMostSelledCollectionsPrivate(
             //receivedAccount, 
             limit));
+        });
+    }
+    getLandingPageMintbase(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const saibdcnjs = yield functionsRpc_1.FunctionsRpc.getLandingPageMintbasePrivate();
+            res.json(saibdcnjs);
         });
     }
     routes() {
@@ -204,8 +210,10 @@ class NEARRoutes {
         this.router.post('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
         this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
-        this.router.get('/getLandingPage', this.getLandingPage);
-        this.router.post('/getLandingPage', this.getLandingPage);
+        this.router.get('/getLandingPageParas', this.getLandingPageParas);
+        this.router.post('/getLandingPageParas', this.getLandingPageParas);
+        this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
+        this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
         this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollections);
     }
 }
