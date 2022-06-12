@@ -22,15 +22,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -42,7 +33,7 @@ const config_1 = require("../config");
 const StatsParasAPI_1 = __importDefault(require("../models/StatsParasAPI"));
 const ParasAPI_1 = __importDefault(require("../models/ParasAPI"));
 const graphql_request_1 = require("graphql-request");
-const { networkId, nodeUrl, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'mainnet');
+const { networkId, nodeUrl, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'testnet');
 var FunctionsRpc;
 (function (FunctionsRpc) {
     const near = new near_api_js_1.Near({
@@ -67,97 +58,87 @@ var FunctionsRpc;
     }
     FunctionsRpc.getMarketplacesClean = getMarketplacesClean;
     ;
-    function getMarketplacesNotEmpties(account, listNftMarketplacesRaw) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let listInternNftMarketplaces = [];
-            for (let index = 0; index < listNftMarketplacesRaw.length; index++) {
-                const element = listNftMarketplacesRaw[index];
-                const supply = yield getNftSupplyForOwnerPrivate(account, element);
-                if (supply != "0") {
-                    listInternNftMarketplaces.push(element);
-                }
+    async function getMarketplacesNotEmpties(account, listNftMarketplacesRaw) {
+        let listInternNftMarketplaces = [];
+        for (let index = 0; index < listNftMarketplacesRaw.length; index++) {
+            const element = listNftMarketplacesRaw[index];
+            const supply = await getNftSupplyForOwnerPrivate(account, element);
+            if (supply != "0") {
+                listInternNftMarketplaces.push(element);
             }
-            return listInternNftMarketplaces;
-        });
+        }
+        return listInternNftMarketplaces;
     }
     FunctionsRpc.getMarketplacesNotEmpties = getMarketplacesNotEmpties;
     ;
-    function getNftTokensFromListForOwnerPrivate(account, listNftMarketplacesNotEmpties) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let listNfts = [];
-            for (let index = 0; index < listNftMarketplacesNotEmpties.length; index++) {
-                const element = listNftMarketplacesNotEmpties[index];
-                const supply = yield getNftTokensForOwnerPrivate(account, element);
-                listNfts.push(supply);
-            }
-            return listNfts;
-        });
+    async function getNftTokensFromListForOwnerPrivate(account, listNftMarketplacesNotEmpties) {
+        let listNfts = [];
+        for (let index = 0; index < listNftMarketplacesNotEmpties.length; index++) {
+            const element = listNftMarketplacesNotEmpties[index];
+            const supply = await getNftTokensForOwnerPrivate(account, element);
+            listNfts.push(supply);
+        }
+        return listNfts;
     }
     FunctionsRpc.getNftTokensFromListForOwnerPrivate = getNftTokensFromListForOwnerPrivate;
     ;
-    function getNftSupplyForOwnerPrivate(receivedAccount, receivedContract) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const account = yield near.account(receivedAccount);
-            const contract = new nearAPI.Contract(account, receivedContract, {
-                viewMethods: ['nft_supply_for_owner'],
-                changeMethods: []
-            });
-            // @ts-ignore
-            const supply = yield contract.nft_supply_for_owner({
-                "account_id": receivedAccount
-            });
-            console.log("supply");
-            console.log(supply);
-            return supply;
+    async function getNftSupplyForOwnerPrivate(receivedAccount, receivedContract) {
+        const account = await near.account(receivedAccount);
+        const contract = new nearAPI.Contract(account, receivedContract, {
+            viewMethods: ['nft_supply_for_owner'],
+            changeMethods: []
         });
+        // @ts-ignore
+        const supply = await contract.nft_supply_for_owner({
+            "account_id": receivedAccount
+        });
+        console.log("supply");
+        console.log(supply);
+        return supply;
     }
     FunctionsRpc.getNftSupplyForOwnerPrivate = getNftSupplyForOwnerPrivate;
     ;
-    function getNftTokensForOwnerPrivate(receivedAccount, receivedContract) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const account = yield near.account(receivedAccount);
-            const contract = new nearAPI.Contract(account, receivedContract, {
-                viewMethods: ['nft_tokens_for_owner'],
-                changeMethods: []
-            });
-            // @ts-ignore
-            const supply = yield contract.nft_tokens_for_owner({
-                "account_id": receivedAccount
-            });
-            //console.log("supply");
-            //console.log(supply);
-            return supply;
+    async function getNftTokensForOwnerPrivate(receivedAccount, receivedContract) {
+        const account = await near.account(receivedAccount);
+        console.log("account: " + account);
+        const contract = new nearAPI.Contract(account, receivedContract, {
+            viewMethods: ['nft_tokens_for_owner'],
+            changeMethods: []
         });
+        // @ts-ignore
+        const supply = await contract.nft_tokens_for_owner({
+            "account_id": receivedAccount
+        });
+        //console.log("supply");
+        //console.log(supply);
+        return supply;
     }
     FunctionsRpc.getNftTokensForOwnerPrivate = getNftTokensForOwnerPrivate;
     ;
-    function getLandingPageParasPrivate(receivedAccount, listMarketplacesParas) {
-        return __awaiter(this, void 0, void 0, function* () {
-            //let listExistentIds = [];
-            let listLandingPage = [];
-            for (let index = 0; index < listMarketplacesParas.length; index++) {
-                const element = listMarketplacesParas[index];
-                const nftSeries = yield getNftGetSeriesIdsPrivate(receivedAccount, element);
-                //listExistentIds.push(nftSeries);
-                for (let index = 0; index < nftSeries.length; index++) {
-                    const element = nftSeries[index];
-                    let preToken = yield getNftTokensBySeriesPrivate(receivedAccount, element.toString());
-                    if (preToken != "") {
-                        listLandingPage.push(preToken);
-                    }
+    async function getLandingPageParasPrivate(receivedAccount, listMarketplacesParas) {
+        //let listExistentIds = [];
+        let listLandingPage = [];
+        for (let index = 0; index < listMarketplacesParas.length; index++) {
+            const element = listMarketplacesParas[index];
+            const nftSeries = await getNftGetSeriesIdsPrivate(receivedAccount, element);
+            //listExistentIds.push(nftSeries);
+            for (let index = 0; index < nftSeries.length; index++) {
+                const element = nftSeries[index];
+                let preToken = await getNftTokensBySeriesPrivate(receivedAccount, element.toString());
+                if (preToken != "") {
+                    listLandingPage.push(preToken);
                 }
-                console.log("listLandingPage");
-                console.log(nftSeries);
             }
-            return listLandingPage;
-        });
+            console.log("listLandingPage");
+            console.log(nftSeries);
+        }
+        return listLandingPage;
     }
     FunctionsRpc.getLandingPageParasPrivate = getLandingPageParasPrivate;
     ;
-    function getLandingPageMintbasePrivate() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let listLandingPage = [];
-            const query = (0, graphql_request_1.gql) `
+    async function getLandingPageMintbasePrivate() {
+        let listLandingPage = [];
+        const query = (0, graphql_request_1.gql) `
     {
         mb_views_top_stores(limit: 100) {
             store_id
@@ -166,153 +147,138 @@ var FunctionsRpc;
 		    name
         }
     }`;
-            let rdonsmvk = yield graphqlQuery(query);
-            console.log("rdonsmvk: " + rdonsmvk);
-            return rdonsmvk.mb_views_top_stores;
-        });
+        let rdonsmvk = await graphqlQuery(query);
+        console.log("rdonsmvk: " + rdonsmvk);
+        return rdonsmvk.mb_views_top_stores;
     }
     FunctionsRpc.getLandingPageMintbasePrivate = getLandingPageMintbasePrivate;
-    function getParasCollectionsWithAPI(limit) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { data } = yield StatsParasAPI_1.default.get('/');
-            return data;
-        });
+    async function getParasCollectionsWithAPI(limit) {
+        const { data } = await StatsParasAPI_1.default.get('/');
+        return data;
     }
     FunctionsRpc.getParasCollectionsWithAPI = getParasCollectionsWithAPI;
     ;
-    function getNftSingleCollectionWithFirstAPI(collectionId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { data } = yield ParasAPI_1.default.get(`/collections?collection_id=${collectionId}`);
-            console.log(data.data.results[0].collection);
-            return data.data.results;
-        });
+    async function getNftSingleCollectionWithFirstAPI(collectionId) {
+        const { data } = await ParasAPI_1.default.get(`/collections?collection_id=${collectionId}`);
+        console.log(data.data.results[0].collection);
+        return data.data.results;
     }
     FunctionsRpc.getNftSingleCollectionWithFirstAPI = getNftSingleCollectionWithFirstAPI;
-    function getMostSelledCollectionsPrivate(
+    async function getMostSelledCollectionsPrivate(
     //receivedAccount: string,
     limit) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const collectionsRAW = yield getParasCollectionsWithAPI(limit);
-            console.log("collectionsRAW");
-            console.log(collectionsRAW);
-            let dataEvie = {
-                "results": [],
-                "skip": 0,
-                "limit": 0,
-            };
-            let listCollections = {
-                "data": dataEvie,
-                "status": 1,
-            };
-            //listCollections.data = {} as DataEvie;
-            for (let index = 0; index < collectionsRAW.length; index++) {
-                const element = collectionsRAW[index];
-                let preToken = yield getNftSingleCollectionWithFirstAPI(element.collection_id);
-                // console.log(preToken);
-                // console.log("preToken");
-                console.log(preToken);
-                listCollections.data.results.push({
-                    "_id": element._id,
-                    "collection_id": element.collection_id,
-                    "collection": preToken[0].collection,
-                    "volume": element.volume,
-                    "volume_usd": element.volume_usd,
-                    "total_sales": element.total_sales,
-                    "total_owners": element.total_owners,
-                    "total_cards": element.total_cards,
-                    "avg_price": element.avg_price,
-                    "avg_price_usd": element.avg_price_usd,
-                    "description": preToken[0].description || "",
-                    "media": preToken[0].media || "",
-                    "creator_id": preToken[0].creator_id,
-                });
-            }
-            // for (let i = 0; i < collectionsRAW.length; i++) {
-            //     const element = collectionsRAW[i];
-            //     console.log(element.collection_id);
-            //     let preToken = await getNftSingleCollectionWithFirstAPI(element.collection_id);
-            //     if (preToken != null) {
-            //         listCollections.push(preToken);
-            //     }
-            // }
-            //return listCollections;
-            console.log("listCollections:" + listCollections.data.results.length);
-            return listCollections;
-        });
+        const collectionsRAW = await getParasCollectionsWithAPI(limit);
+        console.log("collectionsRAW");
+        console.log(collectionsRAW);
+        let dataEvie = {
+            "results": [],
+            "skip": 0,
+            "limit": 0,
+        };
+        let listCollections = {
+            "data": dataEvie,
+            "status": 1,
+        };
+        //listCollections.data = {} as DataEvie;
+        for (let index = 0; index < collectionsRAW.length; index++) {
+            const element = collectionsRAW[index];
+            let preToken = await getNftSingleCollectionWithFirstAPI(element.collection_id);
+            // console.log(preToken);
+            // console.log("preToken");
+            console.log(preToken);
+            listCollections.data.results.push({
+                "_id": element._id,
+                "collection_id": element.collection_id,
+                "collection": preToken[0].collection,
+                "volume": element.volume,
+                "volume_usd": element.volume_usd,
+                "total_sales": element.total_sales,
+                "total_owners": element.total_owners,
+                "total_cards": element.total_cards,
+                "avg_price": element.avg_price,
+                "avg_price_usd": element.avg_price_usd,
+                "description": preToken[0].description || "",
+                "media": preToken[0].media || "",
+                "creator_id": preToken[0].creator_id,
+            });
+        }
+        // for (let i = 0; i < collectionsRAW.length; i++) {
+        //     const element = collectionsRAW[i];
+        //     console.log(element.collection_id);
+        //     let preToken = await getNftSingleCollectionWithFirstAPI(element.collection_id);
+        //     if (preToken != null) {
+        //         listCollections.push(preToken);
+        //     }
+        // }
+        //return listCollections;
+        console.log("listCollections:" + listCollections.data.results.length);
+        return listCollections;
     }
     FunctionsRpc.getMostSelledCollectionsPrivate = getMostSelledCollectionsPrivate;
     ;
-    function getNftTokenPrivate(receivedAccount, receivedContract, receivedId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log(receivedId);
-            const account = yield near.account(receivedAccount);
-            const contract = new nearAPI.Contract(account, receivedContract, {
-                viewMethods: ['nft_token'],
-                changeMethods: []
-            });
-            // @ts-ignore
-            const token = yield contract.nft_token({
-                "token_id": receivedId
-            });
-            return token;
+    async function getNftTokenPrivate(receivedAccount, receivedContract, receivedId) {
+        console.log(receivedId);
+        const account = await near.account(receivedAccount);
+        const contract = new nearAPI.Contract(account, receivedContract, {
+            viewMethods: ['nft_token'],
+            changeMethods: []
         });
+        // @ts-ignore
+        const token = await contract.nft_token({
+            "token_id": receivedId
+        });
+        return token;
     }
     ;
-    function getNftGetSeriesIdsPrivate(receivedAccount, contract_id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const from_index = "0";
-            const account = yield near.account(receivedAccount);
-            const contract = new nearAPI.Contract(account, contract_id, {
-                viewMethods: ['nft_get_series'],
-                changeMethods: []
-            });
-            // @ts-ignore
-            const series = yield contract.nft_get_series({
-                "from_index": from_index,
-                "limit": 100
-            });
-            const max_number = series.length;
-            let listExistentIds = [];
-            for (let index = 0; index < series.length; index++) {
-                const element = series[index];
-                listExistentIds.push(element.token_series_id);
-            }
-            return listExistentIds;
+    async function getNftGetSeriesIdsPrivate(receivedAccount, contract_id) {
+        const from_index = "0";
+        const account = await near.account(receivedAccount);
+        const contract = new nearAPI.Contract(account, contract_id, {
+            viewMethods: ['nft_get_series'],
+            changeMethods: []
         });
+        // @ts-ignore
+        const series = await contract.nft_get_series({
+            "from_index": from_index,
+            "limit": 100
+        });
+        const max_number = series.length;
+        let listExistentIds = [];
+        for (let index = 0; index < series.length; index++) {
+            const element = series[index];
+            listExistentIds.push(element.token_series_id);
+        }
+        return listExistentIds;
     }
     FunctionsRpc.getNftGetSeriesIdsPrivate = getNftGetSeriesIdsPrivate;
     ;
-    function getNftTokensBySeriesPrivate(receivedAccount, TokenSeriesId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log(TokenSeriesId);
-            const account = yield near.account(receivedAccount);
-            let tokens = "";
-            const contract = new nearAPI.Contract(account, "x.paras.near", 
-            //"paras-token-v2.testnet",
-            {
-                viewMethods: ['nft_tokens_by_series'],
-                changeMethods: []
-            });
-            // @ts-ignore
-            yield contract.nft_tokens_by_series({
-                "token_series_id": TokenSeriesId,
-                //"from_index": "0",
-                "limit": 100
-            }).then((result) => {
-                tokens = result[0];
-            }).catch((err) => {
-                tokens = "";
-            });
-            return tokens;
+    async function getNftTokensBySeriesPrivate(receivedAccount, TokenSeriesId) {
+        console.log(TokenSeriesId);
+        const account = await near.account(receivedAccount);
+        let tokens = "";
+        const contract = new nearAPI.Contract(account, "x.paras.near", 
+        //"paras-token-v2.testnet",
+        {
+            viewMethods: ['nft_tokens_by_series'],
+            changeMethods: []
         });
+        // @ts-ignore
+        await contract.nft_tokens_by_series({
+            "token_series_id": TokenSeriesId,
+            //"from_index": "0",
+            "limit": 100
+        }).then((result) => {
+            tokens = result[0];
+        }).catch((err) => {
+            tokens = "";
+        });
+        return tokens;
     }
     FunctionsRpc.getNftTokensBySeriesPrivate = getNftTokensBySeriesPrivate;
     ;
-    function graphqlQuery(query) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const dassdsad = yield (0, graphql_request_1.request)('https://mintbase-mainnet.hasura.app/v1/graphql', query);
-            return dassdsad;
-        });
+    async function graphqlQuery(query) {
+        const dassdsad = await (0, graphql_request_1.request)('https://mintbase-mainnet.hasura.app/v1/graphql', query);
+        return dassdsad;
     }
     FunctionsRpc.graphqlQuery = graphqlQuery;
 })(FunctionsRpc = exports.FunctionsRpc || (exports.FunctionsRpc = {}));
