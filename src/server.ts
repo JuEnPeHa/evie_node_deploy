@@ -13,8 +13,10 @@ import * as nearAPI from 'near-api-js';
 import NEARRoutesMainnet from './routes/NEARRoutesMainnet';
 import NEARRoutesTestnet from './routes/NEARRoutesTestnet';
 
-var functions = require('./routes/NEARRoutesMainnet');
-export const nearAccountCaller: nearAPI.Account = functions.nearAccountCaller();
+var functionsMainnet = require('./routes/NEARRoutesMainnet');
+export const nearAccountCallerMainnet: nearAPI.Account = functionsMainnet.nearAccountCallerMainnet();
+var functionsTestnet = require('./routes/NEARRoutesTestnet');
+export const nearAccountCallerTestnet: nearAPI.Account = functionsTestnet.nearAccountCallerTestnet();
 
     // async function connectDB() {
     //     const MONGO_URI = 'mongodb+srv://efwcwwwwce:7sPtSf8mzuTAqfGx@cluster0.w0ka0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';

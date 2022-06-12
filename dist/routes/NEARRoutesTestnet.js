@@ -39,7 +39,7 @@ const near = new near_api_js_1.Near({
     helperUrl,
     headers: {}
 });
-module.exports.nearAccountCaller = async function nearAccountCaller() {
+module.exports.nearAccountCallerTestnet = async function nearAccountCallerTestnet() {
     const nearAccountCaller = await near.account(contractName);
     console.log('nearAccountCaller', await nearAccountCaller.getAccountBalance());
     return await nearAccountCaller;
@@ -86,7 +86,7 @@ class NEARRoutesTestnet {
     async getNftTokensForOwner(req, res) {
         const { receivedAccount, receivedContract } = req.body;
         //const account = await near.account(receivedAccount);
-        const contract = new nearAPI.Contract(server_1.nearAccountCaller, receivedContract, {
+        const contract = new nearAPI.Contract(server_1.nearAccountCallerTestnet, receivedContract, {
             viewMethods: ['nft_tokens_for_owner'],
             changeMethods: []
         });

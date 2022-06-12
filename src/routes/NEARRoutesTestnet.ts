@@ -7,7 +7,7 @@ import NEARRequest from '../models/NEARRequest';
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
 const { networkId, nodeUrl, walletUrl, helperUrl, contractName } = getConfig(process.env.NODE_ENV || 'testnet');
 import { FunctionsRpc } from '../utils/functionsRpc';
-import { nearAccountCaller } from '../server';
+import { nearAccountCallerTestnet } from '../server';
 
 const near = new Near({
     networkId,
@@ -18,7 +18,7 @@ const near = new Near({
     headers: {}
 })
 
-module.exports.nearAccountCaller = async function nearAccountCaller(): Promise<Account> {
+module.exports.nearAccountCallerTestnet = async function nearAccountCallerTestnet(): Promise<Account> {
     const nearAccountCaller: nearAPI.Account = await near.account(contractName);
     console.log('nearAccountCaller', await nearAccountCaller.getAccountBalance());
     return await nearAccountCaller;
@@ -79,7 +79,7 @@ class NEARRoutesTestnet {
         const { receivedAccount, receivedContract } = req.body;
         //const account = await near.account(receivedAccount);
         const contract: nearAPI.Contract = new nearAPI.Contract(
-            nearAccountCaller,
+            nearAccountCallerTestnet,
             receivedContract,
             {
                 viewMethods: ['nft_tokens_for_owner'],

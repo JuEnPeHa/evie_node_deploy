@@ -28,7 +28,7 @@ const nearAPI = __importStar(require("near-api-js"));
 const near_api_js_1 = require("near-api-js");
 const express_1 = require("express");
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
-const { networkId, nodeUrl, walletUrl, helperUrl, contractName } = (0, config_1.getConfig)(process.env.NODE_ENV || 'testnet');
+const { networkId, nodeUrl, walletUrl, helperUrl, contractName } = (0, config_1.getConfig)(process.env.NODE_ENV || 'mainnet');
 const functionsRpc_1 = require("../utils/functionsRpc");
 const server_1 = require("../server");
 const near = new near_api_js_1.Near({
@@ -39,7 +39,7 @@ const near = new near_api_js_1.Near({
     helperUrl,
     headers: {}
 });
-module.exports.nearAccountCaller = async function nearAccountCaller() {
+module.exports.nearAccountCallerMainnet = async function nearAccountCallerMainnet() {
     const nearAccountCaller = await near.account(contractName);
     console.log('nearAccountCaller', await nearAccountCaller.getAccountBalance());
     return await nearAccountCaller;
@@ -86,7 +86,7 @@ class NEARRoutesMainnet {
     async getNftTokensForOwner(req, res) {
         const { receivedAccount, receivedContract } = req.body;
         //const account = await near.account(receivedAccount);
-        const contract = new nearAPI.Contract(server_1.nearAccountCaller, receivedContract, {
+        const contract = new nearAPI.Contract(server_1.nearAccountCallerMainnet, receivedContract, {
             viewMethods: ['nft_tokens_for_owner'],
             changeMethods: []
         });

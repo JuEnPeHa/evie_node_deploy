@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.nearAccountCaller = void 0;
+exports.nearAccountCallerTestnet = exports.nearAccountCallerMainnet = void 0;
 const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 //import mongoose from 'mongoose';
@@ -15,8 +15,10 @@ const indexRoutes_1 = __importDefault(require("./routes/indexRoutes"));
 const helmet_1 = __importDefault(require("helmet"));
 const NEARRoutesMainnet_1 = __importDefault(require("./routes/NEARRoutesMainnet"));
 const NEARRoutesTestnet_1 = __importDefault(require("./routes/NEARRoutesTestnet"));
-var functions = require('./routes/NEARRoutesMainnet');
-exports.nearAccountCaller = functions.nearAccountCaller();
+var functionsMainnet = require('./routes/NEARRoutesMainnet');
+exports.nearAccountCallerMainnet = functionsMainnet.nearAccountCallerMainnet();
+var functionsTestnet = require('./routes/NEARRoutesTestnet');
+exports.nearAccountCallerTestnet = functionsTestnet.nearAccountCallerTestnet();
 // async function connectDB() {
 //     const MONGO_URI = 'mongodb+srv://efwcwwwwce:7sPtSf8mzuTAqfGx@cluster0.w0ka0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 //     const db = await mongoose.connect(MONGO_URI || process.env.MONGODB_URI).then(db => console.log('DB connected', db.connection.db.databaseName)).catch(err => console.log(err));
