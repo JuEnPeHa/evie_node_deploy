@@ -5,8 +5,15 @@ import { parseContract } from 'near-contract-parser';
 import { Request, Response, Router } from 'express';
 import NEARRequest from '../models/NEARRequest';
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
-const { networkId, nodeUrl, walletUrl, helperUrl, contractName } = getConfig(process.env.NODE_ENV || 'mainnet');
+const { networkId, nodeUrl, walletUrl, helperUrl, contractName } = getConfig(process.env.NODE_ENV || 'testnet');
 import { FunctionsRpc } from '../utils/functionsRpc';
+import { nearAccountCaller } from '../server';
+
+module.exports.nearAccountCaller = async function nearAccountCaller(): Promise<Account> {
+    const nearAccountCaller = await near.account(contractName);
+    console.log('nearAccountCaller', await nearAccountCaller.state());
+    return await nearAccountCaller;
+}
 
 const near = new Near({
     networkId,
@@ -75,9 +82,23 @@ class NEARRoutes {
         res.json(tokens);
    }
 
+//    getNEARInstance(method: string, contractId: string,n : nearAPI.Account): nearAPI.Contract {
+//     const contract = new nearAPI.Contract(
+
+//         await near.account(contractId),
+//         contractId,
+//         // method,
+//         {
+//             viewMethods: [method],
+//             changeMethods: []
+//         }
+//     );
+//    }
+
    async getNftTokensBySeries(req: Request, res: Response): Promise<void> {
        const { receivedAccount, TokenSeriesId } = req.body;
-         const account = await near.account(receivedAccount);
+         const account = await near.account(contractName);
+         console.log("account + nearAccountCaller", account + " " + await nearAccountCaller);
             const contract: nearAPI.Contract = new nearAPI.Contract(
                 account,
             //"x.paras.near",

@@ -1,12 +1,18 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME || 'evie.jeph.testnet';
+let mainnet: boolean = false;
+let CONTRACT_NAME = mainnet ? "" : 'evie.jeph.testnet';
 export function getConfig(env: string) {
+  if (env === 'mainnet') {
+    mainnet = true;
+} else {
+    mainnet = false;
+}
   switch(env) {
     case 'mainnet':
     case 'production':
       return {
         networkId: 'mainnet',
         nodeUrl: 'https://rpc.mainnet.near.org',
-        contractName: CONTRACT_NAME,
+        contractName: 'CONTRACT_NAME',
         walletUrl: 'https://wallet.near.org',
         helperUrl: 'https://helper.mainnet.near.org'
       };
@@ -15,7 +21,7 @@ export function getConfig(env: string) {
       return {
         networkId: 'default',
         nodeUrl: 'https://rpc.testnet.near.org',
-        contractName: CONTRACT_NAME,
+        contractName: 'evie.jeph.testnet',
         walletUrl: 'https://wallet.testnet.near.org',
         helperUrl: 'https://helper.testnet.near.org'
       };

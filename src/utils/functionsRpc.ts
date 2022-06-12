@@ -9,7 +9,7 @@ import { DataEvie, EvieAPICollectionResponse, ResultEvie } from '../interfaces/e
 import { request, gql } from 'graphql-request'
 import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollectionResponse';
 
-const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'mainnet');
+const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'testnet');
 
 export module FunctionsRpc {
 
@@ -86,6 +86,7 @@ export async function getNftTokensForOwnerPrivate(
     receivedContract: string
 ) {
     const account = await near.account(receivedAccount);
+    console.log("account: " + account);
     const contract: nearAPI.Contract = new nearAPI.Contract(
         account,
         receivedContract,
