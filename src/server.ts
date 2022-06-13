@@ -18,6 +18,23 @@ export const nearAccountCallerMainnet: nearAPI.Account = functionsMainnet.nearAc
 var functionsTestnet = require('./routes/NEARRoutesTestnet');
 export const nearAccountCallerTestnet: nearAPI.Account = functionsTestnet.nearAccountCallerTestnet();
 
+export const getNearContract = (
+    account: nearAPI.Account,
+     contractForInteraction: string,
+      method: string,
+      ): nearAPI.Contract => {
+        const contract = new nearAPI.Contract(
+            account,
+            //"x.paras.near",
+            contractForInteraction,
+                {
+                    viewMethods: [method],
+                    changeMethods: []
+                }
+            );
+            return contract;
+}
+
     // async function connectDB() {
     //     const MONGO_URI = 'mongodb+srv://efwcwwwwce:7sPtSf8mzuTAqfGx@cluster0.w0ka0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
     //     const db = await mongoose.connect(MONGO_URI || process.env.MONGODB_URI).then(db => console.log('DB connected', db.connection.db.databaseName)).catch(err => console.log(err));

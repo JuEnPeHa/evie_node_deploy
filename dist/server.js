@@ -1,9 +1,32 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.nearAccountCallerTestnet = exports.nearAccountCallerMainnet = void 0;
+exports.getNearContract = exports.nearAccountCallerTestnet = exports.nearAccountCallerMainnet = void 0;
 const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 //import mongoose from 'mongoose';
@@ -13,12 +36,23 @@ const PostRoutes_1 = __importDefault(require("./routes/PostRoutes"));
 const UserRoutes_1 = __importDefault(require("./routes/UserRoutes"));
 const indexRoutes_1 = __importDefault(require("./routes/indexRoutes"));
 const helmet_1 = __importDefault(require("helmet"));
+const nearAPI = __importStar(require("near-api-js"));
 const NEARRoutesMainnet_1 = __importDefault(require("./routes/NEARRoutesMainnet"));
 const NEARRoutesTestnet_1 = __importDefault(require("./routes/NEARRoutesTestnet"));
 var functionsMainnet = require('./routes/NEARRoutesMainnet');
 exports.nearAccountCallerMainnet = functionsMainnet.nearAccountCallerMainnet();
 var functionsTestnet = require('./routes/NEARRoutesTestnet');
 exports.nearAccountCallerTestnet = functionsTestnet.nearAccountCallerTestnet();
+const getNearContract = (account, contractForInteraction, method) => {
+    const contract = new nearAPI.Contract(account, 
+    //"x.paras.near",
+    contractForInteraction, {
+        viewMethods: [method],
+        changeMethods: []
+    });
+    return contract;
+};
+exports.getNearContract = getNearContract;
 // async function connectDB() {
 //     const MONGO_URI = 'mongodb+srv://efwcwwwwce:7sPtSf8mzuTAqfGx@cluster0.w0ka0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 //     const db = await mongoose.connect(MONGO_URI || process.env.MONGODB_URI).then(db => console.log('DB connected', db.connection.db.databaseName)).catch(err => console.log(err));

@@ -7,7 +7,7 @@ import NEARRequest from '../models/NEARRequest';
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
 const { networkId, nodeUrl, walletUrl, helperUrl, contractName } = getConfig(process.env.NODE_ENV || 'testnet');
 import { FunctionsRpc } from '../utils/functionsRpc';
-import { nearAccountCallerTestnet } from '../server';
+import { nearAccountCallerTestnet, getNearContract } from '../server';
 
 const near = new Near({
     networkId,
@@ -24,19 +24,19 @@ module.exports.nearAccountCallerTestnet = async function nearAccountCallerTestne
     return await nearAccountCaller;
 }
 
-function getNearContract(account: nearAPI.Account, contractForInteraction: string, method: string): nearAPI.Contract {
-    console.log('getNearContract', account, contractForInteraction, method, contractName);
-    const contract = new nearAPI.Contract(
-    account,
-    //"x.paras.near",
-    contractForInteraction,
-        {
-            viewMethods: [method],
-            changeMethods: []
-        }
-    );
-    return contract;
-}
+// function getNearContract(account: nearAPI.Account, contractForInteraction: string, method: string): nearAPI.Contract {
+//     //console.log('getNearContract', account, contractForInteraction, method, contractName);
+//     const contract = new nearAPI.Contract(
+//     account,
+//     //"x.paras.near",
+//     contractForInteraction,
+//         {
+//             viewMethods: [method],
+//             changeMethods: []
+//         }
+//     );
+//     return contract;
+// }
 
 class NEARRoutesTestnet {
     router: Router;
@@ -52,8 +52,8 @@ class NEARRoutesTestnet {
             listReceivedContractTyped.push(i);
         });
         const listReceivedContractClean: string[] = FunctionsRpc.getMarketplacesClean(listReceivedContractTyped);
-        const listReceivedContractNotEmpties: string[] = await FunctionsRpc.getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean);
-        const listTokens = await FunctionsRpc.getNftTokensFromListForOwnerPrivate(receivedAccount, listReceivedContractNotEmpties);
+        const listReceivedContractNotEmpties: string[] = await FunctionsRpc.getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean, await nearAccountCallerTestnet);
+        const listTokens = await FunctionsRpc.getNftTokensFromListForOwnerPrivate(receivedAccount, listReceivedContractNotEmpties, await nearAccountCallerTestnet);
         res.json(listTokens);
     }
 
@@ -155,7 +155,7 @@ class NEARRoutesTestnet {
     listReceivedContract.forEach( (i: string) => {
         listReceivedContractTyped.push(i);
     });
-    const finalMembersList = await FunctionsRpc.getLandingPageParasPrivate(receivedAccount, listReceivedContractTyped);
+    const finalMembersList = await FunctionsRpc.getLandingPageParasPrivate(await nearAccountCallerTestnet, listReceivedContractTyped);
     res.json(finalMembersList);
 }
 
