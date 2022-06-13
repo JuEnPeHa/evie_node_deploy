@@ -74,7 +74,7 @@ class NEARRoutesMainnet {
         const { receivedAccount, receivedContract } = req.body;
         //console.log( await testNEAR2(receivedAccount, receivedContract));
         //res.json(receivedContract);
-        const account = await near.account(receivedAccount);
+        const account = await near.account(contractName);
         const contract = new nearAPI.Contract(account, receivedContract, {
             viewMethods: ['nft_total_supply'],
             changeMethods: []

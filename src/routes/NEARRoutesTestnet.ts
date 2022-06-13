@@ -25,6 +25,7 @@ module.exports.nearAccountCallerTestnet = async function nearAccountCallerTestne
 }
 
 function getNearContract(account: nearAPI.Account, contractForInteraction: string, method: string): nearAPI.Contract {
+    console.log('getNearContract', account, contractForInteraction, method, contractName);
     const contract = new nearAPI.Contract(
     account,
     //"x.paras.near",
@@ -61,31 +62,17 @@ class NEARRoutesTestnet {
         const { receivedAccount, receivedContract } = req.body;
         //console.log( await testNEAR2(receivedAccount, receivedContract));
         //res.json(receivedContract);
-         const account = await near.account(receivedAccount);
-         const contract: nearAPI.Contract = new nearAPI.Contract(
-             account,
-             receivedContract,
-             {
-                 viewMethods: ['nft_total_supply'],
-                 changeMethods: []
-             }
-         );
+        //const account = await near.account(receivedAccount);
+        const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, receivedContract, 'nft_total_supply');
          // @ts-ignore
-         const totalSupply = await contract.nft_total_supply({});
+        const totalSupply = await contract.nft_total_supply({});
          res.json(totalSupply);
     }
 
    async getNftTokensForOwner(req: Request, res: Response): Promise<void> {
         const { receivedAccount, receivedContract } = req.body;
         //const account = await near.account(receivedAccount);
-        const contract: nearAPI.Contract = new nearAPI.Contract(
-            nearAccountCallerTestnet,
-            receivedContract,
-            {
-                viewMethods: ['nft_tokens_for_owner'],
-                changeMethods: []
-            }
-        );
+        const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, receivedContract, 'nft_tokens_for_owner');
         // @ts-ignore
         const tokens = await contract.nft_tokens_for_owner({
             "account_id": receivedAccount,
@@ -110,9 +97,9 @@ class NEARRoutesTestnet {
 
    async getNftTokensBySeries(req: Request, res: Response): Promise<void> {
        const { receivedAccount, TokenSeriesId } = req.body;
-         const account = await near.account(contractName);
+         //const account = await near.account(contractName);
          //console.log("account + nearAccountCaller", account + " " + await nearAccountCaller);
-            const contract: nearAPI.Contract = getNearContract(account, "paras-token-v2.testnet", 'nft_tokens_by_series');
+            const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, "paras-token-v2.testnet", 'nft_tokens_by_series');
             // @ts-ignore
             const tokens = await contract.nft_tokens_by_series({
                 "token_series_id": TokenSeriesId,
@@ -124,8 +111,8 @@ class NEARRoutesTestnet {
 
    async getNftSupplyForOwner(req: Request, res: Response): Promise<void> {
         const { receivedAccount, receivedContract } = req.body;
-        const account = await near.account(contractName);
-        const contract: nearAPI.Contract = getNearContract(account, receivedContract, 'nft_supply_for_owner');
+        //const account = await near.account(contractName);
+        const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, receivedContract, 'nft_supply_for_owner');
         // @ts-ignore
         const supply = await contract.nft_supply_for_owner({
             "account_id": receivedAccount
@@ -139,8 +126,8 @@ class NEARRoutesTestnet {
 
    async getNftGetSeries(req: Request, res: Response): Promise<void> {
         const { receivedAccount } = req.body;
-        const account = await near.account(contractName);
-        const contract: nearAPI.Contract = getNearContract(account, "paras-token-v2.testnet", 'nft_get_series');
+        //const account = await near.account(contractName);
+        const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, "paras-token-v2.testnet", 'nft_get_series');
         // @ts-ignore
         const series = await contract.nft_get_series({
             "from_index": "0",
@@ -151,8 +138,9 @@ class NEARRoutesTestnet {
 
    async getNftGetSeriesSingle(req: Request, res: Response) {
         const { receivedAccount, TokenSeriesId } = req.body;
-        const account = await near.account(contractName);
-        const contract: nearAPI.Contract = getNearContract(account, "paras-token-v2.testnet", 'nft_get_series_single');
+        //const account = await near.account(contractName);
+        //For some reason the await is necessary here
+        const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, "paras-token-v2.testnet", 'nft_get_series_single');
         // @ts-ignore
         const series = await contract.nft_get_series_single({
             "token_series_id": TokenSeriesId
