@@ -8,7 +8,7 @@ class IndexRoutes {
     }
 
     routes() {
-        this.router.get('/', (req, res) => res.send('Api: /api/posts'));
+        this.router.get('/', (req, res) => res.send('<p>Api Mainnet: http://localhost:3000/api/near/mainnet/getLandingPageParas</p> <br> <p>Api Testnet: http://localhost:3000/api/near/testnet/getLandingPageParas</p>'));
     }
 }
 
