@@ -17,7 +17,7 @@ const near = new near_api_js_1.Near({
 });
 module.exports.nearAccountCallerMainnet = async function nearAccountCallerMainnet() {
     const nearAccountCaller = await near.account(contractName);
-    console.log('nearAccountCaller', await nearAccountCaller.getAccountBalance());
+    console.log('nearAccountCallerMainnet', await nearAccountCaller.getAccountBalance());
     return await nearAccountCaller;
 };
 // function getNearContract(account: nearAPI.Account, contractForInteraction: string, method: string): nearAPI.Contract {

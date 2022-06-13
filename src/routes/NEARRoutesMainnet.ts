@@ -20,7 +20,7 @@ const near = new Near({
 
 module.exports.nearAccountCallerMainnet = async function nearAccountCallerMainnet(): Promise<Account> {
     const nearAccountCaller = await near.account(contractName);
-    console.log('nearAccountCaller', await nearAccountCaller.getAccountBalance());
+    console.log('nearAccountCallerMainnet', await nearAccountCaller.getAccountBalance());
     return await nearAccountCaller;
 }
 
