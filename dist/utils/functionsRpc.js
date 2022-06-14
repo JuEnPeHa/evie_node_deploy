@@ -125,11 +125,11 @@ var FunctionsRpc;
     }
     FunctionsRpc.getLandingPageParasPrivate = getLandingPageParasPrivate;
     ;
-    async function getLandingPageMintbasePrivate() {
+    async function getLandingPageMintbasePrivate(limit) {
         let listLandingPage = [];
         const query = (0, graphql_request_1.gql) `
     {
-        mb_views_top_stores(limit: 100) {
+        mb_views_top_stores(limit: ${limit}) {
             store_id
 		    total
 		    owner

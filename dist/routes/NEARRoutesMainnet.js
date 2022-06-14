@@ -129,14 +129,25 @@ class NEARRoutesMainnet {
         });
         res.json(series);
     }
+    //Solo devuelve resultados de Mainnet
+    /*La siguiente función no recibe ningún parámetro
+    Devuelve una lista de stores en orden de creación
+    especificamente devuelve lo siguiente:
+    - token_id
+    - owner_id de la store
+    - titulo
+    - media
+    - tiempo de creación
+    - referencia
+    */
     async getLandingPageParas(req, res) {
-        let listReceivedContractTyped = [];
-        const { listReceivedContract } = req.body;
-        const receivedAccount = contractName;
-        listReceivedContract.forEach((i) => {
-            listReceivedContractTyped.push(i);
-        });
-        const finalMembersList = await functionsRpc_1.FunctionsRpc.getLandingPageParasPrivate(await server_1.nearAccountCallerMainnet, listReceivedContractTyped);
+        let listContracts = ["x.paras.near"];
+        //const { listReceivedContract } = req.body;
+        // const receivedAccount = contractName;
+        // listReceivedContract.forEach( (i: string) => {
+        //     listReceivedContractTyped.push(i);
+        // });
+        const finalMembersList = await functionsRpc_1.FunctionsRpc.getLandingPageParasPrivate(await server_1.nearAccountCallerMainnet, listContracts);
         res.json(finalMembersList);
     }
     async getMostSelledCollections(req, res) {
@@ -146,8 +157,16 @@ class NEARRoutesMainnet {
         //receivedAccount, 
         limit));
     }
+    //Solo devuelve resultados de Mainnet
+    /*La siguiente función no recibe ningún parámetro
+    pero devuelve una lista de las principales stores
+    de mintbase, especificamente devuelve lo siguiente:
+    - El nombre de la store
+    - El total de valor de las ventas
+    - El contrato de la store
+    - El account dueño de la store                  */
     async getLandingPageMintbase(req, res) {
-        const saibdcnjs = await functionsRpc_1.FunctionsRpc.getLandingPageMintbasePrivate();
+        const saibdcnjs = await functionsRpc_1.FunctionsRpc.getLandingPageMintbasePrivate(100);
         res.json(saibdcnjs);
     }
     routes() {
@@ -166,9 +185,9 @@ class NEARRoutesMainnet {
         this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.get('/getLandingPageParas', this.getLandingPageParas);
-        this.router.post('/getLandingPageParas', this.getLandingPageParas);
+        //this.router.post('/getLandingPageParas', this.getLandingPageParas);
         this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
-        this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
+        //this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
         this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollections);
     }
 }

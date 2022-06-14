@@ -138,11 +138,11 @@ export async function getLandingPageParasPrivate(
     return listLandingPage;
 };
 
-export async function getLandingPageMintbasePrivate() {
+export async function getLandingPageMintbasePrivate(limit: number) {
     let listLandingPage = [];
     const query = gql`
     {
-        mb_views_top_stores(limit: 100) {
+        mb_views_top_stores(limit: ${limit}) {
             store_id
 		    total
 		    owner
