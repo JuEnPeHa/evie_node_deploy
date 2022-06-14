@@ -146,14 +146,25 @@ class NEARRoutesMainnet {
         res.json(series);
    }
 
+    //Solo devuelve resultados de Mainnet
+   /*La siguiente función no recibe ningún parámetro
+   Devuelve una lista de stores en orden de creación
+   especificamente devuelve lo siguiente:
+   - token_id
+   - owner_id de la store
+   - titulo
+   - media
+   - tiempo de creación
+   - referencia
+   */
    async getLandingPageParas(req: Request, res: Response): Promise<void> {
-       let listReceivedContractTyped: string[] = [];
-    const { listReceivedContract } = req.body;
-    const receivedAccount = contractName;
-    listReceivedContract.forEach( (i: string) => {
-        listReceivedContractTyped.push(i);
-    });
-    const finalMembersList = await FunctionsRpc.getLandingPageParasPrivate(await nearAccountCallerMainnet, listReceivedContractTyped);
+       let listContracts: string[] = ["x.paras.near"];
+    //const { listReceivedContract } = req.body;
+    // const receivedAccount = contractName;
+    // listReceivedContract.forEach( (i: string) => {
+    //     listReceivedContractTyped.push(i);
+    // });
+    const finalMembersList = await FunctionsRpc.getLandingPageParasPrivate(await nearAccountCallerMainnet, listContracts);
     res.json(finalMembersList);
 }
 
@@ -166,8 +177,16 @@ class NEARRoutesMainnet {
         ));
     }
 
+    //Solo devuelve resultados de Mainnet
+    /*La siguiente función no recibe ningún parámetro
+    pero devuelve una lista de las principales stores
+    de mintbase, especificamente devuelve lo siguiente:
+    - El nombre de la store
+    - El total de valor de las ventas
+    - El contrato de la store
+    - El account dueño de la store                  */
     async getLandingPageMintbase(req: Request, res: Response) {
-        const saibdcnjs = await FunctionsRpc.getLandingPageMintbasePrivate();
+        const saibdcnjs = await FunctionsRpc.getLandingPageMintbasePrivate(100);
         res.json(saibdcnjs);
     }
 
@@ -187,10 +206,10 @@ class NEARRoutesMainnet {
         this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.get('/getLandingPageParas', this.getLandingPageParas);
-        this.router.post('/getLandingPageParas', this.getLandingPageParas);
+        //this.router.post('/getLandingPageParas', this.getLandingPageParas);
 
         this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
-        this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
+        //this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
 
         this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollections);
     }
