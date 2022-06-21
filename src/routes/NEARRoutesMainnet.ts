@@ -200,7 +200,7 @@ class NEARRoutesMainnet {
 				"media": "bafybeigc6z74rtwmigcoo5eqcsc4gxwkganqs4uq5nuz4dwlhjhrurofeq",
 				"creator_id": "asac.near"                                           */
     async getMostSelledCollectionsParas(req: Request, res: Response): Promise<void> {
-    const limit = req.params.limit || 10;
+    const limit: number = Number(req.query.limit) || 10;
     res.json(await FunctionsRpc.getMostSelledCollectionsPrivate(
         (limit as number),
         ));
@@ -246,7 +246,8 @@ class NEARRoutesMainnet {
         this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
         //this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
 
-        this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollectionsParas);
+        //Añadir ?limit={CUALQUIERNUMEROVALIDO}
+        this.router.get('/getMostSelledCollections', this.getMostSelledCollectionsParas);
     }
 }
 
