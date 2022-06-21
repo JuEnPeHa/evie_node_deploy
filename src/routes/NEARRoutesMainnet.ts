@@ -100,9 +100,7 @@ class NEARRoutesMainnet {
     //Funciona en testnet y en mainnet
     /* Devuelve todos los nfts de la serie requerida */
     async getNftTokensBySeries(req: Request, res: Response): Promise<void> {
-       const { receivedAccount, TokenSeriesId } = req.body;
-         const account = await near.account(contractName);
-         //console.log("account + nearAccountCaller", account + " " + await nearAccountCaller);
+        const TokenSeriesId = req.query.TokenSeriesId || "1"
             const contract: nearAPI.Contract = getNearContract(await nearAccountCallerMainnet, "x.paras.near", 'nft_tokens_by_series');
             // @ts-ignore
             const tokens = await contract.nft_tokens_by_series({
@@ -237,8 +235,9 @@ class NEARRoutesMainnet {
         this.router.get('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
         // this.router.post('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
 
+        //Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}
         this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
-        this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
+        //this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
 
         this.router.get('/getLandingPageParas', this.getLandingPageParas);
         //this.router.post('/getLandingPageParas', this.getLandingPageParas);

@@ -184,7 +184,7 @@ export async function getMostSelledCollectionsPrivate(
         "status": 1,
     }
     //listCollections.data = {} as DataEvie;
-    for (let index = 0; index < collectionsRAW.length; index++) {
+    for (let index = 0; index < /*collectionsRAW.length*/ limit; index++) {
         const element = collectionsRAW[index];
         let preToken = await getNftSingleCollectionWithFirstAPI(element.collection_id);
         // console.log(preToken);
