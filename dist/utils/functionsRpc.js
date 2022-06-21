@@ -136,9 +136,9 @@ var FunctionsRpc;
 		    name
         }
     }`;
-        let rdonsmvk = await graphqlQuery(query);
-        console.log("rdonsmvk: " + rdonsmvk);
-        return rdonsmvk.mb_views_top_stores;
+        let mbStoreCollection = await graphqlQuery(query);
+        console.log("mbStoreCollection: " + mbStoreCollection);
+        return mbStoreCollection.mb_views_top_stores;
     }
     FunctionsRpc.getLandingPageMintbasePrivate = getLandingPageMintbasePrivate;
     async function getParasCollectionsWithAPI(limit) {
@@ -169,7 +169,7 @@ var FunctionsRpc;
             "status": 1,
         };
         //listCollections.data = {} as DataEvie;
-        for (let index = 0; index < collectionsRAW.length; index++) {
+        for (let index = 0; index < /*collectionsRAW.length*/ limit; index++) {
             const element = collectionsRAW[index];
             let preToken = await getNftSingleCollectionWithFirstAPI(element.collection_id);
             // console.log(preToken);

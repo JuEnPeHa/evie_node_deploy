@@ -38,11 +38,14 @@ class NEARRoutesMainnet {
         this.routes();
     }
     async getNftMetadata(req, res) {
-        let listReceivedContractTyped = [];
-        const { receivedAccount, listReceivedContract } = req.body;
-        listReceivedContract.forEach((i) => {
-            listReceivedContractTyped.push(i);
-        });
+        var _a;
+        const receivedAccount = ((_a = req.query.account) === null || _a === void 0 ? void 0 : _a.toString()) || "";
+        console.log(receivedAccount);
+        let listReceivedContractTyped = ["x.paras.near"];
+        // const { receivedAccount, listReceivedContract } = req.body;
+        // listReceivedContract.forEach( (i: string) => {
+        //     listReceivedContractTyped.push(i);
+        // });
         const listReceivedContractClean = functionsRpc_1.FunctionsRpc.getMarketplacesClean(listReceivedContractTyped);
         const listReceivedContractNotEmpties = await functionsRpc_1.FunctionsRpc.getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean, await server_1.nearAccountCallerMainnet);
         const listTokens = await functionsRpc_1.FunctionsRpc.getNftTokensFromListForOwnerPrivate(receivedAccount, listReceivedContractNotEmpties, await server_1.nearAccountCallerMainnet);
@@ -53,7 +56,7 @@ class NEARRoutesMainnet {
         const { receivedAccount, receivedContract } = req.body;
         //console.log( await testNEAR2(receivedAccount, receivedContract));
         //res.json(receivedContract);
-        const account = await near.account(contractName);
+        //const account = await near.account(contractName);
         const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, receivedContract, 'nft_total_supply');
         // @ts-ignore
         const totalSupply = await contract.nft_total_supply({});
@@ -82,11 +85,12 @@ class NEARRoutesMainnet {
     //         }
     //     );
     //    }
+    //TODO: CHANGE for query
+    //Funciona en testnet y en mainnet
+    /* Devuelve todos los nfts de la serie requerida */
     async getNftTokensBySeries(req, res) {
-        const { receivedAccount, TokenSeriesId } = req.body;
-        const account = await near.account(contractName);
-        //console.log("account + nearAccountCaller", account + " " + await nearAccountCaller);
-        const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, "paras-token-v2.testnet", 'nft_tokens_by_series');
+        const TokenSeriesId = req.query.TokenSeriesId || "1";
+        const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, "x.paras.near", 'nft_tokens_by_series');
         // @ts-ignore
         const tokens = await contract.nft_tokens_by_series({
             "token_series_id": TokenSeriesId,
@@ -97,7 +101,7 @@ class NEARRoutesMainnet {
     }
     async getNftSupplyForOwner(req, res) {
         const { receivedAccount, receivedContract } = req.body;
-        const account = await near.account(contractName);
+        //const account = await near.account(contractName);
         const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, receivedContract, 'nft_supply_for_owner');
         // @ts-ignore
         const supply = await contract.nft_supply_for_owner({
@@ -108,21 +112,25 @@ class NEARRoutesMainnet {
     async getAllNftsFromUser(req, res) {
         const { receivedAccount, receivedContract } = req.body;
     }
+    //Funciona en Mainnet y en Testnet
+    /* Devuelve las series de los marketplaces */
     async getNftGetSeries(req, res) {
-        const { receivedAccount } = req.body;
-        const account = await near.account(contractName);
-        const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, "paras-token-v2.testnet", 'nft_get_series');
+        const from = req.query.from || "0";
+        const limit = Number(req.query.limit) || 100;
+        const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, "x.paras.near", 'nft_get_series');
         // @ts-ignore
         const series = await contract.nft_get_series({
-            "from_index": "0",
-            "limit": 100
+            "from_index": from,
+            "limit": limit
         });
         res.json(series);
     }
+    //Funciona en mainnet y testnet
+    /* Devuelve un solo token solicitado por su TokenSeriesId            */
     async getNftGetSeriesSingle(req, res) {
-        const { receivedAccount, TokenSeriesId } = req.body;
-        const account = await near.account(contractName);
-        const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, "paras-token-v2.testnet", 'nft_get_series_single');
+        const TokenSeriesId = req.query.TokenSeriesId || "1";
+        //For some reason the await is necessary here
+        const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, "x.paras.near", 'nft_get_series_single');
         // @ts-ignore
         const series = await contract.nft_get_series_single({
             "token_series_id": TokenSeriesId
@@ -142,20 +150,39 @@ class NEARRoutesMainnet {
     */
     async getLandingPageParas(req, res) {
         let listContracts = ["x.paras.near"];
-        //const { listReceivedContract } = req.body;
-        // const receivedAccount = contractName;
-        // listReceivedContract.forEach( (i: string) => {
-        //     listReceivedContractTyped.push(i);
-        // });
         const finalMembersList = await functionsRpc_1.FunctionsRpc.getLandingPageParasPrivate(await server_1.nearAccountCallerMainnet, listContracts);
         res.json(finalMembersList);
     }
-    async getMostSelledCollections(req, res) {
-        //const receivedAccount = contractName;
-        const limit = req.params.limit || 10;
-        res.json(await functionsRpc_1.FunctionsRpc.getMostSelledCollectionsPrivate(
-        //receivedAccount, 
-        limit));
+    //Solo funciona en Mainnet
+    //Devuelve las collecciones más vendidas por órden de volumen
+    /* Devuelve lo siguiente:
+    - _id del resultado
+    - collection_id
+    - volumen en near
+    - volumen en usd
+    - ventas totales
+    - cartas totales
+    - precio promedio near
+    - precio promedio usd
+    - descripción
+    - id del dueño de la colección
+    ejemplo:
+                "_id": "61f0a9c8e0af1a189dd17416",
+                "collection_id": "asac.near",
+                "collection": "Antisocial Ape Club",
+                "volume": "274189644148383769689990000000",
+                "volume_usd": 3218059.059615341,
+                "total_sales": 3868,
+                "total_owners": 1239,
+                "total_cards": 3329,
+                "avg_price": "70886671186241925979831954",
+                "avg_price_usd": 831.9697672221668,
+                "description": "A collection of 3333 pixel art ape NFTs stored on the NEAR blockchain.",
+                "media": "bafybeigc6z74rtwmigcoo5eqcsc4gxwkganqs4uq5nuz4dwlhjhrurofeq",
+                "creator_id": "asac.near"                                           */
+    async getMostSelledCollectionsParas(req, res) {
+        const limit = Number(req.query.limit) || 10;
+        res.json(await functionsRpc_1.FunctionsRpc.getMostSelledCollectionsPrivate(limit));
     }
     //Solo devuelve resultados de Mainnet
     /*La siguiente función no recibe ningún parámetro
@@ -166,8 +193,8 @@ class NEARRoutesMainnet {
     - El contrato de la store
     - El account dueño de la store                  */
     async getLandingPageMintbase(req, res) {
-        const saibdcnjs = await functionsRpc_1.FunctionsRpc.getLandingPageMintbasePrivate(100);
-        res.json(saibdcnjs);
+        const landingPage = await functionsRpc_1.FunctionsRpc.getLandingPageMintbasePrivate(100);
+        res.json(landingPage);
     }
     routes() {
         this.router.get('/getSupply', this.getNftTotalSupply);
@@ -176,19 +203,24 @@ class NEARRoutesMainnet {
         this.router.post('/getTokens', this.getNftTokensForOwner);
         this.router.get('/getSupplyForOwner', this.getNftSupplyForOwner);
         this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
+        //Añadir parametro query al final: ?account={NEARACCOUNT}
         this.router.get('/getMetadata', this.getNftMetadata);
-        this.router.post('/getMetadata', this.getNftMetadata);
+        //this.router.post('/getMetadata', this.getNftMetadata);
+        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}?limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
-        this.router.post('/getNftGetSeries', this.getNftGetSeries);
+        // this.router.post('/getNftGetSeries', this.getNftGetSeries);
+        /* Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}*/
         this.router.get('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
-        this.router.post('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
+        // this.router.post('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
+        //Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}
         this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
-        this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
+        //this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.get('/getLandingPageParas', this.getLandingPageParas);
         //this.router.post('/getLandingPageParas', this.getLandingPageParas);
         this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
         //this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
-        this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollections);
+        //Añadir ?limit={CUALQUIERNUMEROVALIDO}
+        this.router.get('/getMostSelledCollections', this.getMostSelledCollectionsParas);
     }
 }
 const nearRoutesMainnet = new NEARRoutesMainnet();
