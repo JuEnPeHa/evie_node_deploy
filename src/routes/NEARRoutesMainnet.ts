@@ -45,11 +45,13 @@ class NEARRoutesMainnet {
     }
 
     async getNftMetadata(req: Request, res: Response): Promise<void> {
-        let listReceivedContractTyped: string[] = [];
-        const { receivedAccount, listReceivedContract } = req.body;
-        listReceivedContract.forEach( (i: string) => {
-            listReceivedContractTyped.push(i);
-        });
+        const receivedAccount = req.query.account?.toString() || "";
+        console.log(receivedAccount);
+        let listReceivedContractTyped: string[] = ["x.paras.near"];
+        // const { receivedAccount, listReceivedContract } = req.body;
+        // listReceivedContract.forEach( (i: string) => {
+        //     listReceivedContractTyped.push(i);
+        // });
         const listReceivedContractClean: string[] = FunctionsRpc.getMarketplacesClean(listReceivedContractTyped);
         const listReceivedContractNotEmpties: string[] = await FunctionsRpc.getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean, await nearAccountCallerMainnet);
         const listTokens = await FunctionsRpc.getNftTokensFromListForOwnerPrivate(receivedAccount, listReceivedContractNotEmpties, await nearAccountCallerMainnet);
@@ -224,8 +226,10 @@ class NEARRoutesMainnet {
         this.router.post('/getTokens', this.getNftTokensForOwner);
         this.router.get('/getSupplyForOwner', this.getNftSupplyForOwner);
         this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
+
+        //Añadir parametro query al final: ?account={NEARACCOUNT}
         this.router.get('/getMetadata', this.getNftMetadata);
-        this.router.post('/getMetadata', this.getNftMetadata);
+        //this.router.post('/getMetadata', this.getNftMetadata);
 
         /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}?limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);

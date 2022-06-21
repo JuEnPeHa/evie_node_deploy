@@ -46,11 +46,8 @@ class NEARRoutesTestnet {
     }
 
     async getNftMetadata(req: Request, res: Response): Promise<void> {
-        let listReceivedContractTyped: string[] = [];
-        const { receivedAccount, listReceivedContract } = req.body;
-        listReceivedContract.forEach( (i: string) => {
-            listReceivedContractTyped.push(i);
-        });
+        const receivedAccount = req.query.account?.toString() || "";
+        let listReceivedContractTyped: string[] = ["paras-token-v2.testnet"];
         const listReceivedContractClean: string[] = FunctionsRpc.getMarketplacesClean(listReceivedContractTyped);
         const listReceivedContractNotEmpties: string[] = await FunctionsRpc.getMarketplacesNotEmpties(receivedAccount, listReceivedContractClean, await nearAccountCallerTestnet);
         const listTokens = await FunctionsRpc.getNftTokensFromListForOwnerPrivate(receivedAccount, listReceivedContractNotEmpties, await nearAccountCallerTestnet);
