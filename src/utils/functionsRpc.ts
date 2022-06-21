@@ -149,9 +149,9 @@ export async function getLandingPageMintbasePrivate(limit: number) {
 		    name
         }
     }`;
-    let rdonsmvk = await graphqlQuery(query);
-    console.log("rdonsmvk: " + rdonsmvk);
-    return rdonsmvk.mb_views_top_stores;
+    let mbStoreCollection = await graphqlQuery(query);
+    console.log("mbStoreCollection: " + mbStoreCollection);
+    return mbStoreCollection.mb_views_top_stores;
 }
 
 
