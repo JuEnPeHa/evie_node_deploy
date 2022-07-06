@@ -10,6 +10,8 @@ import { request, gql } from 'graphql-request'
 import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollectionResponse';
 import { getNearContract } from '../server';
 import { NFTData } from '../interfaces/nftData';
+import higgsfieldAPI from '../models/HiggsfieldAPI';
+import { HiggsfieldCollectionResponse } from '../interfaces/higgsfieldResponse';
 
 const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'testnet');
 
@@ -140,9 +142,15 @@ export async function getLandingPageParasPrivate(
 };
 
 export async function getLandingPageHiggsFieldPrivate(
-    nextId: string, 
+    nextId: string = null, 
+    limit: number = 10,
+    days: number = 1000,
+    name: string = "collectables"
 ) {
-
+    const { data } = await higgsfieldAPI.post<HiggsfieldCollectionResponse>('/',
+    {
+        
+    })
 }
 
 export async function getLandingPageMintbasePrivate(limit: number) {
@@ -319,8 +327,8 @@ export async function getNftTokensBySeriesPrivate(
 };
 
 export async function graphqlQuery(query: string) {
-    const dassdsad = await request<MintbaseStoresCollection>('https://mintbase-mainnet.hasura.app/v1/graphql', query)
-    return dassdsad;
+    const resp = await request<MintbaseStoresCollection>('https://mintbase-mainnet.hasura.app/v1/graphql', query)
+    return resp;
 }
 
 };
