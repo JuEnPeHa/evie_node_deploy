@@ -17,15 +17,6 @@ const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_
 
 export module FunctionsRpc {
 
-// const near = new Near({
-//     networkId,
-//     keyStore: new keyStores.InMemoryKeyStore(),
-//     nodeUrl,
-//     walletUrl,
-//     helperUrl,
-//     headers: {}
-// });
-
 export function getMarketplacesClean(listNftMarketplacesRaw: string[]): string[] {
     let listNftMarketplaces: string[] = [];
         listNftMarketplacesRaw.forEach(
@@ -74,14 +65,6 @@ export async function getNftSupplyForOwnerPrivate(
 ): Promise<string> {
     //const account = await near.account(receivedAccount);
     const contract: nearAPI.Contract = getNearContract(account, receivedContract, 'nft_supply_for_owner');
-    // const contract: nearAPI.Contract = new nearAPI.Contract(
-    //     account,
-    //     receivedContract,
-    //     {
-    //         viewMethods: ['nft_supply_for_owner'],
-    //         changeMethods: []
-    //     }
-    // );
     // @ts-ignore
     const supply = await contract.nft_supply_for_owner({
         "account_id": receivedAccount
@@ -99,14 +82,6 @@ export async function getNftTokensForOwnerPrivate(
     //const account = await near.account(receivedAccount);
     const contract: nearAPI.Contract = getNearContract(account, receivedContract, 'nft_tokens_for_owner');
     console.log("account: " + account);
-    // const contract: nearAPI.Contract = new nearAPI.Contract(
-    //     account,
-    //     receivedContract,
-    //     {
-    //         viewMethods: ['nft_tokens_for_owner'],
-    //         changeMethods: []
-    //     }
-    // );
     // @ts-ignore
     const supply = await contract.nft_tokens_for_owner({
         "account_id": receivedAccount
@@ -142,7 +117,7 @@ export async function getLandingPageParasPrivate(
 };
 
 export async function getLandingPageHiggsFieldPrivate(
-    nextId: string = null, 
+    nextId: string | null = null, 
     limit: number = 10,
     days: number = 1000,
     name: string = "collectables"
@@ -239,7 +214,29 @@ export async function getMostSelledCollectionsPrivate(
     return listCollections;
 };
 
-async function getNftTokenPrivate(
+export const getNftTokenPrivate = async (
+    account: nearAPI.Account,    
+    receivedContract: string,
+    receivedId: string,
+): Promise<NFTData> => {
+    const contract: nearAPI.Contract = getNearContract(await account, receivedContract, 'nft_token');
+    console.log("account: " + account);
+    let supply;
+
+    try {
+        // @ts-ignore
+        supply = await contract.nft_token({
+        "token_id": receivedId
+    });
+    } catch (error) {
+        supply = error;
+    }
+    console.log("supply");
+    console.log(supply);
+    return supply;
+}
+
+async function getNftTokenPrivate_2(
     //receivedAccount: string,
     receivedContract: string,
     receivedId: string,
@@ -248,14 +245,6 @@ async function getNftTokenPrivate(
     console.log(receivedId);
     //const account = await near.account(receivedAccount);
     const contract: nearAPI.Contract = getNearContract(await account, receivedContract, 'nft_token');
-    // const contract: nearAPI.Contract = new nearAPI.Contract(
-    //     await account,
-    //     receivedContract,
-    //     {
-    //         viewMethods: ['nft_token'],
-    //         changeMethods: []
-    //     }
-    // );
     // @ts-ignore
     const token = await contract.nft_token({
         "token_id": receivedId
@@ -271,14 +260,6 @@ export async function getNftGetSeriesIdsPrivate(
     const from_index: string = "0";
     //const account = await near.account(receivedAccount);
     const contract: nearAPI.Contract = getNearContract(await account, contract_id, 'nft_get_series');
-    // const contract: nearAPI.Contract = new nearAPI.Contract(
-    //     account,
-    //     contract_id,
-    //     {
-    //         viewMethods: ['nft_get_series'],
-    //         changeMethods: []
-    //     }
-    // );
     // @ts-ignore
     const series = await contract.nft_get_series({
         "from_index": from_index,
@@ -302,15 +283,6 @@ export async function getNftTokensBySeriesPrivate(
       //const account = await near.account(receivedAccount);
       let tokens: string = "";
         const contract: nearAPI.Contract = getNearContract(await account, "x.paras.near", 'nft_tokens_by_series');
-        //  const contract: nearAPI.Contract = new nearAPI.Contract(
-        //      account,
-        //      "x.paras.near",
-        //      //"paras-token-v2.testnet",
-        //      {
-        //          viewMethods: ['nft_tokens_by_series'],
-        //          changeMethods: []
-        //      }
-        //  );
          // @ts-ignore
          await contract.nft_tokens_by_series({
              "token_series_id": TokenSeriesId,
