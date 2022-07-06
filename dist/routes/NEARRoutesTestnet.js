@@ -200,7 +200,7 @@ class NEARRoutesTestnet {
         //Añadir parametro query al final: ?account={NEARACCOUNT}
         this.router.get('/getMetadata', this.getNftMetadata);
         //this.router.post('/getMetadata', this.getNftMetadata);
-        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}?limit={CUALQUIERNUMEROVALIDO} */
+        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO&limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
         // this.router.post('/getNftGetSeries', this.getNftGetSeries);
         /* Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}*/

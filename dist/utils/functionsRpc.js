@@ -9,17 +9,10 @@ const StatsParasAPI_1 = __importDefault(require("../models/StatsParasAPI"));
 const ParasAPI_1 = __importDefault(require("../models/ParasAPI"));
 const graphql_request_1 = require("graphql-request");
 const server_1 = require("../server");
+const HiggsfieldAPI_1 = __importDefault(require("../models/HiggsfieldAPI"));
 const { networkId, nodeUrl, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'testnet');
 var FunctionsRpc;
 (function (FunctionsRpc) {
-    // const near = new Near({
-    //     networkId,
-    //     keyStore: new keyStores.InMemoryKeyStore(),
-    //     nodeUrl,
-    //     walletUrl,
-    //     helperUrl,
-    //     headers: {}
-    // });
     function getMarketplacesClean(listNftMarketplacesRaw) {
         let listNftMarketplaces = [];
         listNftMarketplacesRaw.forEach((marketplace) => {
@@ -61,14 +54,6 @@ var FunctionsRpc;
     async function getNftSupplyForOwnerPrivate(receivedAccount, account, receivedContract) {
         //const account = await near.account(receivedAccount);
         const contract = (0, server_1.getNearContract)(account, receivedContract, 'nft_supply_for_owner');
-        // const contract: nearAPI.Contract = new nearAPI.Contract(
-        //     account,
-        //     receivedContract,
-        //     {
-        //         viewMethods: ['nft_supply_for_owner'],
-        //         changeMethods: []
-        //     }
-        // );
         // @ts-ignore
         const supply = await contract.nft_supply_for_owner({
             "account_id": receivedAccount
@@ -83,14 +68,6 @@ var FunctionsRpc;
         //const account = await near.account(receivedAccount);
         const contract = (0, server_1.getNearContract)(account, receivedContract, 'nft_tokens_for_owner');
         console.log("account: " + account);
-        // const contract: nearAPI.Contract = new nearAPI.Contract(
-        //     account,
-        //     receivedContract,
-        //     {
-        //         viewMethods: ['nft_tokens_for_owner'],
-        //         changeMethods: []
-        //     }
-        // );
         // @ts-ignore
         const supply = await contract.nft_tokens_for_owner({
             "account_id": receivedAccount
@@ -125,7 +102,8 @@ var FunctionsRpc;
     }
     FunctionsRpc.getLandingPageParasPrivate = getLandingPageParasPrivate;
     ;
-    async function getLandingPageHiggsFieldPrivate(nextId) {
+    async function getLandingPageHiggsFieldPrivate(nextId = null, limit = 10, days = 1000, name = "collectables") {
+        const { data } = await HiggsfieldAPI_1.default.post('/', {});
     }
     FunctionsRpc.getLandingPageHiggsFieldPrivate = getLandingPageHiggsFieldPrivate;
     async function getLandingPageMintbasePrivate(limit) {
@@ -214,20 +192,29 @@ var FunctionsRpc;
     }
     FunctionsRpc.getMostSelledCollectionsPrivate = getMostSelledCollectionsPrivate;
     ;
-    async function getNftTokenPrivate(
+    FunctionsRpc.getNftTokenPrivate = async (account, receivedContract, receivedId) => {
+        const contract = (0, server_1.getNearContract)(await account, receivedContract, 'nft_token');
+        console.log("account: " + account);
+        let supply;
+        try {
+            // @ts-ignore
+            supply = await contract.nft_token({
+                "token_id": receivedId
+            });
+        }
+        catch (error) {
+            supply = error;
+        }
+        console.log("supply");
+        console.log(supply);
+        return supply;
+    };
+    async function getNftTokenPrivate_2(
     //receivedAccount: string,
     receivedContract, receivedId, account) {
         console.log(receivedId);
         //const account = await near.account(receivedAccount);
         const contract = (0, server_1.getNearContract)(await account, receivedContract, 'nft_token');
-        // const contract: nearAPI.Contract = new nearAPI.Contract(
-        //     await account,
-        //     receivedContract,
-        //     {
-        //         viewMethods: ['nft_token'],
-        //         changeMethods: []
-        //     }
-        // );
         // @ts-ignore
         const token = await contract.nft_token({
             "token_id": receivedId
@@ -241,14 +228,6 @@ var FunctionsRpc;
         const from_index = "0";
         //const account = await near.account(receivedAccount);
         const contract = (0, server_1.getNearContract)(await account, contract_id, 'nft_get_series');
-        // const contract: nearAPI.Contract = new nearAPI.Contract(
-        //     account,
-        //     contract_id,
-        //     {
-        //         viewMethods: ['nft_get_series'],
-        //         changeMethods: []
-        //     }
-        // );
         // @ts-ignore
         const series = await contract.nft_get_series({
             "from_index": from_index,
@@ -271,15 +250,6 @@ var FunctionsRpc;
         //const account = await near.account(receivedAccount);
         let tokens = "";
         const contract = (0, server_1.getNearContract)(await account, "x.paras.near", 'nft_tokens_by_series');
-        //  const contract: nearAPI.Contract = new nearAPI.Contract(
-        //      account,
-        //      "x.paras.near",
-        //      //"paras-token-v2.testnet",
-        //      {
-        //          viewMethods: ['nft_tokens_by_series'],
-        //          changeMethods: []
-        //      }
-        //  );
         // @ts-ignore
         await contract.nft_tokens_by_series({
             "token_series_id": TokenSeriesId,
@@ -295,8 +265,8 @@ var FunctionsRpc;
     FunctionsRpc.getNftTokensBySeriesPrivate = getNftTokensBySeriesPrivate;
     ;
     async function graphqlQuery(query) {
-        const dassdsad = await (0, graphql_request_1.request)('https://mintbase-mainnet.hasura.app/v1/graphql', query);
-        return dassdsad;
+        const resp = await (0, graphql_request_1.request)('https://mintbase-mainnet.hasura.app/v1/graphql', query);
+        return resp;
     }
     FunctionsRpc.graphqlQuery = graphqlQuery;
 })(FunctionsRpc = exports.FunctionsRpc || (exports.FunctionsRpc = {}));

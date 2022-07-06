@@ -196,17 +196,26 @@ class NEARRoutesMainnet {
         const landingPage = await functionsRpc_1.FunctionsRpc.getLandingPageMintbasePrivate(100);
         res.json(landingPage);
     }
+    async getNftToken(req, res) {
+        const { contract, id } = req.query;
+        const response = functionsRpc_1.FunctionsRpc.getNftTokenPrivate(await server_1.nearAccountCallerMainnet, contract, id);
+        res.json({
+            "token_id": id,
+            "owner_id": contract,
+            response
+        });
+    }
     routes() {
         this.router.get('/getSupply', this.getNftTotalSupply);
-        this.router.post('/getSupply', this.getNftTotalSupply);
+        //this.router.post('/getSupply', this.getNftTotalSupply);
         this.router.get('/getTokens', this.getNftTokensForOwner);
-        this.router.post('/getTokens', this.getNftTokensForOwner);
+        //this.router.post('/getTokens', this.getNftTokensForOwner);
         this.router.get('/getSupplyForOwner', this.getNftSupplyForOwner);
-        this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
+        //this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
         //Añadir parametro query al final: ?account={NEARACCOUNT}
         this.router.get('/getMetadata', this.getNftMetadata);
         //this.router.post('/getMetadata', this.getNftMetadata);
-        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}?limit={CUALQUIERNUMEROVALIDO} */
+        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}&limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
         // this.router.post('/getNftGetSeries', this.getNftGetSeries);
         /* Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}*/
@@ -221,6 +230,8 @@ class NEARRoutesMainnet {
         //this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
         //Añadir ?limit={CUALQUIERNUMEROVALIDO}
         this.router.get('/getMostSelledCollections', this.getMostSelledCollectionsParas);
+        //Añadir ?contract={el contrato de la store}&id={el id del token}
+        this.router.get('/nftToken', this.getNftToken);
     }
 }
 const nearRoutesMainnet = new NEARRoutesMainnet();

@@ -219,6 +219,16 @@ class NEARRoutesMainnet {
         res.json(landingPage);
     }
 
+    async getNftToken(req: Request, res: Response) {
+        const { contract, id } = req.query as { contract: string, id: string };
+        const response = FunctionsRpc.getNftTokenPrivate(await nearAccountCallerMainnet, contract, id)
+        res.json({
+            "token_id": id,
+            "owner_id": contract,
+            response
+        })
+    }
+
     routes() {
         this.router.get('/getSupply', this.getNftTotalSupply);
         //this.router.post('/getSupply', this.getNftTotalSupply);
@@ -231,7 +241,7 @@ class NEARRoutesMainnet {
         this.router.get('/getMetadata', this.getNftMetadata);
         //this.router.post('/getMetadata', this.getNftMetadata);
 
-        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}?limit={CUALQUIERNUMEROVALIDO} */
+        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}&limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
         // this.router.post('/getNftGetSeries', this.getNftGetSeries);
         
@@ -251,6 +261,9 @@ class NEARRoutesMainnet {
 
         //Añadir ?limit={CUALQUIERNUMEROVALIDO}
         this.router.get('/getMostSelledCollections', this.getMostSelledCollectionsParas);
+
+        //Añadir ?contract={el contrato de la store}&id={el id del token}
+        this.router.get('/nftToken', this.getNftToken);
     }
 }
 

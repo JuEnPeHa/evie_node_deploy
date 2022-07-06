@@ -223,7 +223,7 @@ class NEARRoutesTestnet {
         this.router.get('/getMetadata', this.getNftMetadata);
         //this.router.post('/getMetadata', this.getNftMetadata);
 
-        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}?limit={CUALQUIERNUMEROVALIDO} */
+        /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO&limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
         // this.router.post('/getNftGetSeries', this.getNftGetSeries);
         
