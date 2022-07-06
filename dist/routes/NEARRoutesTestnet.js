@@ -192,13 +192,14 @@ class NEARRoutesTestnet {
     }
     routes() {
         this.router.get('/getSupply', this.getNftTotalSupply);
-        this.router.post('/getSupply', this.getNftTotalSupply);
+        //this.router.post('/getSupply', this.getNftTotalSupply);
         this.router.get('/getTokens', this.getNftTokensForOwner);
-        this.router.post('/getTokens', this.getNftTokensForOwner);
+        //this.router.post('/getTokens', this.getNftTokensForOwner);
         this.router.get('/getSupplyForOwner', this.getNftSupplyForOwner);
-        this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
+        //this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
+        //Añadir parametro query al final: ?account={NEARACCOUNT}
         this.router.get('/getMetadata', this.getNftMetadata);
-        this.router.post('/getMetadata', this.getNftMetadata);
+        //this.router.post('/getMetadata', this.getNftMetadata);
         /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}?limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
         // this.router.post('/getNftGetSeries', this.getNftGetSeries);

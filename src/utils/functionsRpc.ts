@@ -9,6 +9,7 @@ import { DataEvie, EvieAPICollectionResponse, ResultEvie } from '../interfaces/e
 import { request, gql } from 'graphql-request'
 import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollectionResponse';
 import { getNearContract } from '../server';
+import { NFTData } from '../interfaces/nftData';
 
 const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'testnet');
 
@@ -138,6 +139,12 @@ export async function getLandingPageParasPrivate(
     return listLandingPage;
 };
 
+export async function getLandingPageHiggsFieldPrivate(
+    nextId: string, 
+) {
+
+}
+
 export async function getLandingPageMintbasePrivate(limit: number) {
     let listLandingPage = [];
     const query = gql`
@@ -154,7 +161,12 @@ export async function getLandingPageMintbasePrivate(limit: number) {
     return mbStoreCollection.mb_views_top_stores;
 }
 
-
+export const getNFTData = async (id: string, contract: string): Promise<NFTData> => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return {
+        id,
+    }
+}
 
 export async function getParasCollectionsWithAPI(limit: number) {
     const { data } = await statsParasAPI.get<ParasStatsArray>('/');
@@ -349,3 +361,5 @@ export async function graphqlQuery(query: string) {
         // e.contract_token_ids = contract_token_ids;
     //}
     //return contract_token_ids;
+
+ 

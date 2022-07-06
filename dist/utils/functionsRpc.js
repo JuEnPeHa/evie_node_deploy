@@ -125,6 +125,9 @@ var FunctionsRpc;
     }
     FunctionsRpc.getLandingPageParasPrivate = getLandingPageParasPrivate;
     ;
+    async function getLandingPageHiggsFieldPrivate(nextId) {
+    }
+    FunctionsRpc.getLandingPageHiggsFieldPrivate = getLandingPageHiggsFieldPrivate;
     async function getLandingPageMintbasePrivate(limit) {
         let listLandingPage = [];
         const query = (0, graphql_request_1.gql) `
@@ -141,6 +144,12 @@ var FunctionsRpc;
         return mbStoreCollection.mb_views_top_stores;
     }
     FunctionsRpc.getLandingPageMintbasePrivate = getLandingPageMintbasePrivate;
+    FunctionsRpc.getNFTData = async (id, contract) => {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return {
+            id,
+        };
+    };
     async function getParasCollectionsWithAPI(limit) {
         const { data } = await StatsParasAPI_1.default.get('/');
         return data;
