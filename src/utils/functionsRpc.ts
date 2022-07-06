@@ -24,7 +24,9 @@ export function getMarketplacesClean(listNftMarketplacesRaw: string[]): string[]
             if (marketplace.includes("mintbase") ||
             marketplace.includes("paras") ||
             marketplace.includes("neatar")  ||
-            marketplace.includes("mintspace") ){
+            marketplace.includes("mintspace") ||
+            marketplace.includes("higgsfield")
+            ){
                 listNftMarketplaces.push(marketplace);
             }
         }
@@ -124,8 +126,12 @@ export async function getLandingPageHiggsFieldPrivate(
 ) {
     const { data } = await higgsfieldAPI.post<HiggsfieldCollectionResponse>('/',
     {
-        
-    })
+        "next_id": nextId,
+        "limit": limit,
+        "days": days,
+        "name": name
+    });
+    console.log("data :" + data);
 }
 
 export async function getLandingPageMintbasePrivate(limit: number) {
