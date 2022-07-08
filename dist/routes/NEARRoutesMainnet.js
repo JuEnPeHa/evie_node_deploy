@@ -184,6 +184,10 @@ class NEARRoutesMainnet {
         const landingPage = await functionsRpc_1.FunctionsRpc.getLandingPageMintbasePrivate(100);
         res.json(landingPage);
     }
+    async getLandingPageHiggsField(req, res) {
+        const landingPage = await functionsRpc_1.FunctionsRpc.getLandingPageHiggsFieldPrivate();
+        res.json(landingPage);
+    }
     async getNftToken(req, res) {
         const { contract, id } = req.query;
         const response = await functionsRpc_1.FunctionsRpc.getNftTokenPrivate(await server_1.nearAccountCallerMainnet, contract, id);
@@ -217,6 +221,7 @@ class NEARRoutesMainnet {
         //this.router.post('/getLandingPageParas', this.getLandingPageParas);
         this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
         //this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
+        this.router.get('/getLandingPageHiggsField', this.getLandingPageHiggsField);
         //Añadir ?limit={CUALQUIERNUMEROVALIDO}
         this.router.get('/getMostSelledCollections', this.getMostSelledCollectionsParas);
         //Añadir ?contract={el contrato de la store}&id={el id del token}
