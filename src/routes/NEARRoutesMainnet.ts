@@ -221,12 +221,13 @@ class NEARRoutesMainnet {
 
     async getNftToken(req: Request, res: Response) {
         const { contract, id } = req.query as { contract: string, id: string };
-        const response = FunctionsRpc.getNftTokenPrivate(await nearAccountCallerMainnet, contract, id)
-        res.json({
-            "token_id": id,
-            "owner_id": contract,
-            response
-        })
+        const response = await FunctionsRpc.getNftTokenPrivate(await nearAccountCallerMainnet, contract, id)
+        res.send(response);
+        // res.json({
+        //     "token_id": id,
+        //     "owner_id": contract,
+        //     "response": response
+        // })
     }
 
     routes() {

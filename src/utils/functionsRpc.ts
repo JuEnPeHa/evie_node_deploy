@@ -9,9 +9,12 @@ import { DataEvie, EvieAPICollectionResponse, ResultEvie } from '../interfaces/e
 import { request, gql } from 'graphql-request'
 import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollectionResponse';
 import { getNearContract } from '../server';
-import { NFTData } from '../interfaces/nftData';
+import { Metadata, NFTData } from '../interfaces/nftData';
 import higgsfieldAPI from '../models/HiggsfieldAPI';
 import { HiggsfieldCollectionResponse } from '../interfaces/higgsfieldResponse';
+import { MintbaseNFTData } from '../interfaces/mintbaseNftData';
+import axios, { Axios, AxiosInstance } from 'axios';
+import { ArweaveNftResponse } from '../interfaces/arweaveNftResponce';
 
 const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'testnet');
 
@@ -147,8 +150,8 @@ export async function getLandingPageMintbasePrivate(limit: number) {
 export const getNFTData = async (id: string, contract: string): Promise<NFTData> => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     return {
-        id,
-    }
+        
+    } as NFTData;
 }
 
 export async function getParasCollectionsWithAPI(limit: number) {
@@ -218,39 +221,60 @@ export const getNftTokenPrivate = async (
     account: nearAPI.Account,    
     receivedContract: string,
     receivedId: string,
-): Promise<NFTData> => {
+): Promise<NFTData | unknown> => {
+    const mintbase: boolean = receivedContract.includes("mintbase");
     const contract: nearAPI.Contract = getNearContract(await account, receivedContract, 'nft_token');
     console.log("account: " + account);
-    let supply;
-
+    let supply: NFTData | unknown;
     try {
+        if (!mintbase) {
         // @ts-ignore
         supply = await contract.nft_token({
         "token_id": receivedId
-    });
+        });
+        } else {
+        // @ts-ignore
+        const preSupply: MintbaseNFTData = await contract.nft_token({
+        "token_id": receivedId
+        });
+        supply = getNftTokenMintbasePrivate(preSupply);
+        }
+
     } catch (error) {
         supply = error;
     }
-    console.log("supply");
-    console.log(supply);
-    return supply;
+    return await supply;
 }
 
-async function getNftTokenPrivate_2(
-    //receivedAccount: string,
-    receivedContract: string,
-    receivedId: string,
-    account: nearAPI.Account,
-      ) {
-    console.log(receivedId);
-    //const account = await near.account(receivedAccount);
-    const contract: nearAPI.Contract = getNearContract(await account, receivedContract, 'nft_token');
-    // @ts-ignore
-    const token = await contract.nft_token({
-        "token_id": receivedId
+const getNftTokenMintbasePrivate = async (
+    preSupply: MintbaseNFTData,
+): Promise<NFTData> => {
+    const base: string = "https://arweave.net/";
+    const arweaveInstance: AxiosInstance = axios.create({
+        baseURL: base + preSupply.metadata?.reference,
     });
-    return token;
-};
+    const { data } = await arweaveInstance.get<ArweaveNftResponse>('');
+    const nft: NFTData = {
+        "token_id": preSupply.token_id ?? "",
+        "owner_id": preSupply.owner_id ?? "",
+        "approvedAccountIDS": preSupply.approved_account_ids ?? {},
+        "metadata": {
+            "title": data.title ?? "",
+            "description": data.description ?? "",
+            "media": data.media ?? "",
+            "media_hash": data.media_hash ?? "",
+            "copies": preSupply.metadata?.copies ?? 0,
+            "issued_at": preSupply.metadata?.issued_at ?? "0",
+            "expires_at": preSupply.metadata?.expires_at ?? "0",
+            "starts_at": preSupply.metadata?.starts_at ?? "0",
+            "updated_at": preSupply.metadata?.updated_at ?? "0",
+            "extra": preSupply.metadata?.extra ?? "",
+            "reference": preSupply.metadata?.reference ?? "",
+            "reference_hash": preSupply.metadata?.reference_hash ?? "",
+        }
+    }
+    return nft;
+}
 
 export async function getNftGetSeriesIdsPrivate(
     //receivedAccount: string, 

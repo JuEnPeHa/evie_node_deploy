@@ -10,6 +10,7 @@ const ParasAPI_1 = __importDefault(require("../models/ParasAPI"));
 const graphql_request_1 = require("graphql-request");
 const server_1 = require("../server");
 const HiggsfieldAPI_1 = __importDefault(require("../models/HiggsfieldAPI"));
+const axios_1 = __importDefault(require("axios"));
 const { networkId, nodeUrl, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'testnet');
 var FunctionsRpc;
 (function (FunctionsRpc) {
@@ -124,9 +125,7 @@ var FunctionsRpc;
     FunctionsRpc.getLandingPageMintbasePrivate = getLandingPageMintbasePrivate;
     FunctionsRpc.getNFTData = async (id, contract) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        return {
-            id,
-        };
+        return {};
     };
     async function getParasCollectionsWithAPI(limit) {
         const { data } = await StatsParasAPI_1.default.get('/');
@@ -193,35 +192,58 @@ var FunctionsRpc;
     FunctionsRpc.getMostSelledCollectionsPrivate = getMostSelledCollectionsPrivate;
     ;
     FunctionsRpc.getNftTokenPrivate = async (account, receivedContract, receivedId) => {
+        const mintbase = receivedContract.includes("mintbase");
         const contract = (0, server_1.getNearContract)(await account, receivedContract, 'nft_token');
         console.log("account: " + account);
         let supply;
         try {
-            // @ts-ignore
-            supply = await contract.nft_token({
-                "token_id": receivedId
-            });
+            if (!mintbase) {
+                // @ts-ignore
+                supply = await contract.nft_token({
+                    "token_id": receivedId
+                });
+            }
+            else {
+                // @ts-ignore
+                const preSupply = await contract.nft_token({
+                    "token_id": receivedId
+                });
+                supply = getNftTokenMintbasePrivate(preSupply);
+            }
         }
         catch (error) {
             supply = error;
         }
-        console.log("supply");
-        console.log(supply);
-        return supply;
+        return await supply;
     };
-    async function getNftTokenPrivate_2(
-    //receivedAccount: string,
-    receivedContract, receivedId, account) {
-        console.log(receivedId);
-        //const account = await near.account(receivedAccount);
-        const contract = (0, server_1.getNearContract)(await account, receivedContract, 'nft_token');
-        // @ts-ignore
-        const token = await contract.nft_token({
-            "token_id": receivedId
+    const getNftTokenMintbasePrivate = async (preSupply) => {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
+        const base = "https://arweave.net/";
+        const arweaveInstance = axios_1.default.create({
+            baseURL: base + ((_a = preSupply.metadata) === null || _a === void 0 ? void 0 : _a.reference),
         });
-        return token;
-    }
-    ;
+        const { data } = await arweaveInstance.get('');
+        const nft = {
+            "token_id": (_b = preSupply.token_id) !== null && _b !== void 0 ? _b : "",
+            "owner_id": (_c = preSupply.owner_id) !== null && _c !== void 0 ? _c : "",
+            "approvedAccountIDS": (_d = preSupply.approved_account_ids) !== null && _d !== void 0 ? _d : {},
+            "metadata": {
+                "title": (_e = data.title) !== null && _e !== void 0 ? _e : "",
+                "description": (_f = data.description) !== null && _f !== void 0 ? _f : "",
+                "media": (_g = data.media) !== null && _g !== void 0 ? _g : "",
+                "media_hash": (_h = data.media_hash) !== null && _h !== void 0 ? _h : "",
+                "copies": (_k = (_j = preSupply.metadata) === null || _j === void 0 ? void 0 : _j.copies) !== null && _k !== void 0 ? _k : 0,
+                "issued_at": (_m = (_l = preSupply.metadata) === null || _l === void 0 ? void 0 : _l.issued_at) !== null && _m !== void 0 ? _m : "0",
+                "expires_at": (_p = (_o = preSupply.metadata) === null || _o === void 0 ? void 0 : _o.expires_at) !== null && _p !== void 0 ? _p : "0",
+                "starts_at": (_r = (_q = preSupply.metadata) === null || _q === void 0 ? void 0 : _q.starts_at) !== null && _r !== void 0 ? _r : "0",
+                "updated_at": (_t = (_s = preSupply.metadata) === null || _s === void 0 ? void 0 : _s.updated_at) !== null && _t !== void 0 ? _t : "0",
+                "extra": (_v = (_u = preSupply.metadata) === null || _u === void 0 ? void 0 : _u.extra) !== null && _v !== void 0 ? _v : "",
+                "reference": (_x = (_w = preSupply.metadata) === null || _w === void 0 ? void 0 : _w.reference) !== null && _x !== void 0 ? _x : "",
+                "reference_hash": (_z = (_y = preSupply.metadata) === null || _y === void 0 ? void 0 : _y.reference_hash) !== null && _z !== void 0 ? _z : "",
+            }
+        };
+        return nft;
+    };
     async function getNftGetSeriesIdsPrivate(
     //receivedAccount: string, 
     contract_id, account) {
