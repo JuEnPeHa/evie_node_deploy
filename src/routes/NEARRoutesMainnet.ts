@@ -1,7 +1,6 @@
 import {getConfig} from '../config';
 import * as nearAPI from 'near-api-js';
 import { Account, Near, keyStores } from 'near-api-js';
-import { parseContract } from 'near-contract-parser';
 import { Request, Response, Router } from 'express';
 import NEARRequest from '../models/NEARRequest';
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
@@ -82,22 +81,6 @@ class NEARRoutesMainnet {
         });
         res.json(tokens);
    }
-
-//    getNEARInstance(method: string, contractId: string,n : nearAPI.Account): nearAPI.Contract {
-//     const contract = new nearAPI.Contract(
-
-//         await near.account(contractId),
-//         contractId,
-//         // method,
-//         {
-//             viewMethods: [method],
-//             changeMethods: []
-//         }
-//     );
-//    }
-
-    //TODO: CHANGE for query
-
 
     //Funciona en testnet y en mainnet
     /* Devuelve todos los nfts de la serie requerida */

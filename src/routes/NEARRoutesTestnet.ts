@@ -1,7 +1,6 @@
 import {getConfig} from '../config';
 import * as nearAPI from 'near-api-js';
 import { Account, Near, keyStores } from 'near-api-js';
-import { parseContract } from 'near-contract-parser';
 import { Request, Response, Router } from 'express';
 import NEARRequest from '../models/NEARRequest';
 //import { BrowserLocalStorageKeyStore } from 'near-api-js/lib/key_stores'
