@@ -74,18 +74,6 @@ class NEARRoutesMainnet {
         });
         res.json(tokens);
     }
-    //    getNEARInstance(method: string, contractId: string,n : nearAPI.Account): nearAPI.Contract {
-    //     const contract = new nearAPI.Contract(
-    //         await near.account(contractId),
-    //         contractId,
-    //         // method,
-    //         {
-    //             viewMethods: [method],
-    //             changeMethods: []
-    //         }
-    //     );
-    //    }
-    //TODO: CHANGE for query
     //Funciona en testnet y en mainnet
     /* Devuelve todos los nfts de la serie requerida */
     async getNftTokensBySeries(req, res) {

@@ -20,7 +20,8 @@ var FunctionsRpc;
             if (marketplace.includes("mintbase") ||
                 marketplace.includes("paras") ||
                 marketplace.includes("neatar") ||
-                marketplace.includes("mintspace")) {
+                marketplace.includes("mintspace") ||
+                marketplace.includes("higgsfield")) {
                 listNftMarketplaces.push(marketplace);
             }
         });
@@ -104,7 +105,13 @@ var FunctionsRpc;
     FunctionsRpc.getLandingPageParasPrivate = getLandingPageParasPrivate;
     ;
     async function getLandingPageHiggsFieldPrivate(nextId = null, limit = 10, days = 1000, name = "collectables") {
-        const { data } = await HiggsfieldAPI_1.default.post('/', {});
+        const { data } = await HiggsfieldAPI_1.default.post('/', {
+            "next_id": nextId,
+            "limit": limit,
+            "days": days,
+            "name": name
+        });
+        console.log("data :" + data);
     }
     FunctionsRpc.getLandingPageHiggsFieldPrivate = getLandingPageHiggsFieldPrivate;
     async function getLandingPageMintbasePrivate(limit) {
@@ -208,7 +215,7 @@ var FunctionsRpc;
                 const preSupply = await contract.nft_token({
                     "token_id": receivedId
                 });
-                supply = getNftTokenMintbasePrivate(preSupply);
+                supply = await getNftTokenMintbasePrivate(preSupply);
             }
         }
         catch (error) {

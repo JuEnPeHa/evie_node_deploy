@@ -243,7 +243,7 @@ export const getNftTokenPrivate = async (
         const preSupply: MintbaseNFTData = await contract.nft_token({
         "token_id": receivedId
         });
-        supply = getNftTokenMintbasePrivate(preSupply);
+        supply = await getNftTokenMintbasePrivate(preSupply);
         }
 
     } catch (error) {
