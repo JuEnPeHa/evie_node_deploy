@@ -11,7 +11,7 @@ import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollection
 import { getNearContract } from '../server';
 import { Metadata, NFTData } from '../interfaces/nftData';
 import higgsfieldAPI from '../models/HiggsfieldAPI';
-import { HiggsfieldCollectionResponse } from '../interfaces/higgsfieldResponse';
+import { HiggsfieldCollectionResponse, HiggsfieldCollectionResponseArray } from '../interfaces/higgsfieldResponse';
 import { MintbaseNFTData } from '../interfaces/mintbaseNftData';
 import axios, { Axios, AxiosInstance } from 'axios';
 import { ArweaveNftResponse } from '../interfaces/arweaveNftResponce';
@@ -126,15 +126,23 @@ export async function getLandingPageHiggsFieldPrivate(
     limit: number = 10,
     days: number = 1000,
     name: string = "collectables"
-) {
-    const { data } = await higgsfieldAPI.post<HiggsfieldCollectionResponse>('/',
+): Promise<HiggsfieldCollectionResponse[]> {
+    let response: HiggsfieldCollectionResponse[];
+    try {
+    const { data } = await higgsfieldAPI.post<HiggsfieldCollectionResponse[]>('/search/explore_collections',
     {
         "next_id": nextId,
         "limit": limit,
         "days": days,
         "name": name
     });
-    console.log("data :" + data);
+    response = data;
+    console.log("data :" + data[0]);
+    } catch (error) {
+        console.log(error);
+        response = [];
+    }
+    return response;
 }
 
 export async function getLandingPageMintbasePrivate(limit: number) {

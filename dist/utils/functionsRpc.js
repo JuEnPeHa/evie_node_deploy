@@ -105,13 +105,22 @@ var FunctionsRpc;
     FunctionsRpc.getLandingPageParasPrivate = getLandingPageParasPrivate;
     ;
     async function getLandingPageHiggsFieldPrivate(nextId = null, limit = 10, days = 1000, name = "collectables") {
-        const { data } = await HiggsfieldAPI_1.default.post('/', {
-            "next_id": nextId,
-            "limit": limit,
-            "days": days,
-            "name": name
-        });
-        console.log("data :" + data);
+        let response;
+        try {
+            const { data } = await HiggsfieldAPI_1.default.post('/search/explore_collections', {
+                "next_id": nextId,
+                "limit": limit,
+                "days": days,
+                "name": name
+            });
+            response = data;
+            console.log("data :" + data[0]);
+        }
+        catch (error) {
+            console.log(error);
+            response = [];
+        }
+        return response;
     }
     FunctionsRpc.getLandingPageHiggsFieldPrivate = getLandingPageHiggsFieldPrivate;
     async function getLandingPageMintbasePrivate(limit) {

@@ -1,3 +1,7 @@
+export interface HiggsfieldCollectionResponseArray {
+    data: HiggsfieldCollectionResponse[];
+}
+
 export interface HiggsfieldCollectionResponse {
     id:              string;
     name:            string;
