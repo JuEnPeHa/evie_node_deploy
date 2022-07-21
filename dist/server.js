@@ -39,6 +39,7 @@ const helmet_1 = __importDefault(require("helmet"));
 const nearAPI = __importStar(require("near-api-js"));
 const NEARRoutesMainnet_1 = __importDefault(require("./routes/NEARRoutesMainnet"));
 const NEARRoutesTestnet_1 = __importDefault(require("./routes/NEARRoutesTestnet"));
+const functionsRpc_1 = require("./utils/functionsRpc");
 var functionsMainnet = require('./routes/NEARRoutesMainnet');
 exports.nearAccountCallerMainnet = functionsMainnet.nearAccountCallerMainnet();
 var functionsTestnet = require('./routes/NEARRoutesTestnet');
@@ -81,10 +82,11 @@ class Server {
         this.app.use('/api/near/mainnet', NEARRoutesMainnet_1.default);
         this.app.use('/api/near/testnet', NEARRoutesTestnet_1.default);
     }
-    start() {
+    async start() {
         this.app.listen(this.app.get('port'), () => {
             console.log('Server on port', this.app.get('port'));
         });
+        functionsRpc_1.FunctionsRpc.nftMetadata("x.paras.near", await exports.nearAccountCallerMainnet);
     }
 }
 const server = new Server();

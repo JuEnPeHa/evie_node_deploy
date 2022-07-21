@@ -29,6 +29,14 @@ var FunctionsRpc;
     }
     FunctionsRpc.getMarketplacesClean = getMarketplacesClean;
     ;
+    async function nftMetadata(account, nearAPI) {
+        const contract = (0, server_1.getNearContract)(nearAPI, account, 'nft_metadata');
+        // @ts-ignore
+        const metadata = await contract.nft_metadata({});
+        console.log(metadata);
+        return metadata;
+    }
+    FunctionsRpc.nftMetadata = nftMetadata;
     async function getMarketplacesNotEmpties(account, listNftMarketplacesRaw, nearApiAccount) {
         let listInternNftMarketplaces = [];
         for (let index = 0; index < listNftMarketplacesRaw.length; index++) {
@@ -159,6 +167,7 @@ var FunctionsRpc;
     //receivedAccount: string,
     limit) {
         const collectionsRAW = await getParasCollectionsWithAPI(limit);
+        const preUrl = await FunctionsRpc.nftMetadata("x.paras.near", await server_1.nearAccountCallerMainnet);
         console.log("collectionsRAW");
         console.log(collectionsRAW);
         let dataEvie = {
@@ -189,7 +198,7 @@ var FunctionsRpc;
                 "avg_price": element.avg_price,
                 "avg_price_usd": element.avg_price_usd,
                 "description": preToken[0].description || "",
-                "media": preToken[0].media || "",
+                "media": preUrl.base_uri + preToken[0].media || "",
                 "creator_id": preToken[0].creator_id,
             });
         }

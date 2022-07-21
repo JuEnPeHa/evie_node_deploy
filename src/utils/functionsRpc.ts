@@ -8,7 +8,7 @@ import { ParasCollectionAPIResponse, ParasCollectionArray } from '../interfaces/
 import { DataEvie, EvieAPICollectionResponse, ResultEvie } from '../interfaces/evieResponse';
 import { request, gql } from 'graphql-request'
 import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollectionResponse';
-import { getNearContract } from '../server';
+import { getNearContract, nearAccountCallerMainnet } from '../server';
 import { Metadata, NFTData } from '../interfaces/nftData';
 import higgsfieldAPI from '../models/HiggsfieldAPI';
 import { HiggsfieldCollectionResponse, HiggsfieldCollectionResponseArray } from '../interfaces/higgsfieldResponse';
@@ -36,6 +36,17 @@ export function getMarketplacesClean(listNftMarketplacesRaw: string[]): string[]
     );
     return listNftMarketplaces;
 };
+
+export async function nftMetadata(
+    account: string,
+    nearAPI: nearAPI.Account,
+) {
+    const contract = getNearContract(nearAPI, account, 'nft_metadata');
+    // @ts-ignore
+    const metadata = await contract.nft_metadata({});
+    console.log(metadata);
+    return metadata;
+}
 
 export async function getMarketplacesNotEmpties(account: string, listNftMarketplacesRaw: string[], nearApiAccount: nearAPI.Account) : Promise<string[]> {
     let listInternNftMarketplaces: string[] = [];
@@ -184,6 +195,7 @@ export async function getMostSelledCollectionsPrivate(
     limit: number,
 ) {
     const collectionsRAW = await getParasCollectionsWithAPI(limit);
+    const preUrl = await FunctionsRpc.nftMetadata("x.paras.near", await nearAccountCallerMainnet);
     console.log("collectionsRAW");
     console.log(collectionsRAW);
     let dataEvie: DataEvie = {
@@ -214,7 +226,7 @@ export async function getMostSelledCollectionsPrivate(
             "avg_price": element.avg_price,
             "avg_price_usd": element.avg_price_usd,
             "description": preToken[0].description || "",
-            "media": preToken[0].media || "",
+            "media": preUrl.base_uri + preToken[0].media || "",
             "creator_id": preToken[0].creator_id,
         });
     }
