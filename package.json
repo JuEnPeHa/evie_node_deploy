@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node ./dist/server.js",
+    "start": "node ./dist/server.js",
+    "start_with_build": "tsc && node ./dist/server.js",
     "dev": "ts-node-dev --respawn ./src/server.ts",
     "build": "tsc"
   },

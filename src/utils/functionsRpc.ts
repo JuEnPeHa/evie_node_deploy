@@ -226,7 +226,7 @@ export async function getMostSelledCollectionsPrivate(
             "avg_price": element.avg_price,
             "avg_price_usd": element.avg_price_usd,
             "description": preToken[0].description || "",
-            "media": preUrl.base_uri + preToken[0].media || "",
+            "media": preUrl.base_uri + "/" + preToken[0].media || "",
             "creator_id": preToken[0].creator_id,
         });
     }
