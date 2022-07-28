@@ -23,19 +23,6 @@ module.exports.nearAccountCallerMainnet = async function nearAccountCallerMainne
     return await nearAccountCaller;
 }
 
-// function getNearContract(account: nearAPI.Account, contractForInteraction: string, method: string): nearAPI.Contract {
-//     const contract = new nearAPI.Contract(
-//     account,
-//     //"x.paras.near",
-//     contractForInteraction,
-//         {
-//             viewMethods: [method],
-//             changeMethods: []
-//         }
-//     );
-//     return contract;
-// }
-
 class NEARRoutesMainnet {
     router: Router;
     constructor() {
@@ -59,10 +46,7 @@ class NEARRoutesMainnet {
 
     async getNftTotalSupply(req: Request, res: Response): Promise<void> {
         console.log(req.body);
-        const { receivedAccount, receivedContract } = req.body;
-        //console.log( await testNEAR2(receivedAccount, receivedContract));
-        //res.json(receivedContract);
-        //const account = await near.account(contractName);
+        const receivedContract = req.query.receivedContract?.toString() || "";
         const contract: nearAPI.Contract = getNearContract(await nearAccountCallerMainnet, receivedContract, 'nft_total_supply');
         // @ts-ignore
         const totalSupply = await contract.nft_total_supply({});

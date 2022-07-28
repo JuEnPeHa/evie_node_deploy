@@ -79,6 +79,15 @@ Recibe: El nombre de una cuenta
 Devuelve: Los tokens que tenga la cuenta indicada en los marketplaces ya precargados.
 
 ```
+Mainnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/mainnet/getSupply?receivedContract=x.paras.near
+```
+```
+Testnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/testnet/getSupply?receivedContract=paras-token-v2.testnet
+```
+Recibe: El nombre de un contrato
+?receivedContract=x.paras.near
+Devuelve: El número de tokens que tiene dicho marketplace.
 
 ```
-
