@@ -41,7 +41,6 @@ class NEARRoutesMainnet {
     }
     async getNftTotalSupply(req, res) {
         var _a;
-        console.log(req.body);
         const receivedContract = ((_a = req.query.receivedContract) === null || _a === void 0 ? void 0 : _a.toString()) || "";
         const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, receivedContract, 'nft_total_supply');
         // @ts-ignore
@@ -49,8 +48,9 @@ class NEARRoutesMainnet {
         res.json(totalSupply);
     }
     async getNftTokensForOwner(req, res) {
-        const { receivedAccount, receivedContract } = req.body;
-        //const account = await near.account(receivedAccount);
+        var _a, _b;
+        const receivedAccount = ((_a = req.query.account) === null || _a === void 0 ? void 0 : _a.toString()) || "";
+        const receivedContract = ((_b = req.query.receivedContract) === null || _b === void 0 ? void 0 : _b.toString()) || "";
         const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, receivedContract, 'nft_tokens_for_owner');
         // @ts-ignore
         const tokens = await contract.nft_tokens_for_owner({
@@ -74,8 +74,9 @@ class NEARRoutesMainnet {
         res.json(tokens);
     }
     async getNftSupplyForOwner(req, res) {
-        const { receivedAccount, receivedContract } = req.body;
-        //const account = await near.account(contractName);
+        var _a, _b;
+        const receivedAccount = ((_a = req.query.account) === null || _a === void 0 ? void 0 : _a.toString()) || "";
+        const receivedContract = ((_b = req.query.receivedContract) === null || _b === void 0 ? void 0 : _b.toString()) || "";
         const contract = (0, server_1.getNearContract)(await server_1.nearAccountCallerMainnet, receivedContract, 'nft_supply_for_owner');
         // @ts-ignore
         const supply = await contract.nft_supply_for_owner({
@@ -185,28 +186,22 @@ class NEARRoutesMainnet {
         // })
     }
     routes() {
+        //Añadir parametro contract: ?receivedContract=x.paras.near
         this.router.get('/getSupply', this.getNftTotalSupply);
-        //this.router.post('/getSupply', this.getNftTotalSupply);
+        //Añadir parametros account y contract: ?account=jeph.near&receivedContract=x.paras.near
         this.router.get('/getTokens', this.getNftTokensForOwner);
-        //this.router.post('/getTokens', this.getNftTokensForOwner);
+        //Añadir parametros account y contract: ?account=jeph.near&receivedContract=x.paras.near
         this.router.get('/getSupplyForOwner', this.getNftSupplyForOwner);
-        //this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
         //Añadir parametro query al final: ?account={NEARACCOUNT}
         this.router.get('/getMetadata', this.getNftMetadata);
-        //this.router.post('/getMetadata', this.getNftMetadata);
         /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO}&limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
-        // this.router.post('/getNftGetSeries', this.getNftGetSeries);
         /* Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}*/
         this.router.get('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
-        // this.router.post('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
         //Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}
         this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
-        //this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
         this.router.get('/getLandingPageParas', this.getLandingPageParas);
-        //this.router.post('/getLandingPageParas', this.getLandingPageParas);
         this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
-        //this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
         this.router.get('/getLandingPageHiggsField', this.getLandingPageHiggsField);
         //Añadir ?limit={CUALQUIERNUMEROVALIDO}
         this.router.get('/getMostSelledCollections', this.getMostSelledCollectionsParas);

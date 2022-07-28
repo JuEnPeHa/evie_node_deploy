@@ -54,11 +54,7 @@ class NEARRoutesTestnet {
     }
 
     async getNftTotalSupply(req: Request, res: Response): Promise<void> {
-        console.log(req.body);
-        const { receivedAccount, receivedContract } = req.body;
-        //console.log( await testNEAR2(receivedAccount, receivedContract));
-        //res.json(receivedContract);
-        //const account = await near.account(receivedAccount);
+        const receivedContract = req.query.receivedContract?.toString() || "";
         const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, receivedContract, 'nft_total_supply');
          // @ts-ignore
         const totalSupply = await contract.nft_total_supply({});
@@ -66,8 +62,8 @@ class NEARRoutesTestnet {
     }
 
    async getNftTokensForOwner(req: Request, res: Response): Promise<void> {
-        const { receivedAccount, receivedContract } = req.body;
-        //const account = await near.account(receivedAccount);
+    const receivedAccount = req.query.account?.toString() || "";
+    const receivedContract = req.query.receivedContract?.toString() || "";
         const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, receivedContract, 'nft_tokens_for_owner');
         // @ts-ignore
         const tokens = await contract.nft_tokens_for_owner({
@@ -77,19 +73,6 @@ class NEARRoutesTestnet {
         });
         res.json(tokens);
    }
-
-//    getNEARInstance(method: string, contractId: string,n : nearAPI.Account): nearAPI.Contract {
-//     const contract = new nearAPI.Contract(
-
-//         await near.account(contractId),
-//         contractId,
-//         // method,
-//         {
-//             viewMethods: [method],
-//             changeMethods: []
-//         }
-//     );
-//    }
 
    async getNftTokensBySeries(req: Request, res: Response): Promise<void> {
     const TokenSeriesId = req.query.TokenSeriesId || "1"
@@ -104,8 +87,8 @@ class NEARRoutesTestnet {
    }
 
    async getNftSupplyForOwner(req: Request, res: Response): Promise<void> {
-        const { receivedAccount, receivedContract } = req.body;
-        //const account = await near.account(contractName);
+    const receivedAccount = req.query.account?.toString() || "";
+    const receivedContract = req.query.receivedContract?.toString() || "";
         const contract: nearAPI.Contract = getNearContract(await nearAccountCallerTestnet, receivedContract, 'nft_supply_for_owner');
         // @ts-ignore
         const supply = await contract.nft_supply_for_owner({
@@ -211,34 +194,30 @@ class NEARRoutesTestnet {
     }
 
     routes() {
+        //Añadir parametro contract: ?receivedContract=x.paras.near
         this.router.get('/getSupply', this.getNftTotalSupply);
-        //this.router.post('/getSupply', this.getNftTotalSupply);
+
+        //Añadir parametros account y contract: ?account=jeph.near&receivedContract=x.paras.near
         this.router.get('/getTokens', this.getNftTokensForOwner);
-        //this.router.post('/getTokens', this.getNftTokensForOwner);
+
+        //Añadir parametros account y contract: ?account=jeph.near&receivedContract=x.paras.near
         this.router.get('/getSupplyForOwner', this.getNftSupplyForOwner);
-        //this.router.post('/getSupplyForOwner', this.getNftSupplyForOwner);
 
         //Añadir parametro query al final: ?account={NEARACCOUNT}
         this.router.get('/getMetadata', this.getNftMetadata);
-        //this.router.post('/getMetadata', this.getNftMetadata);
 
         /* Añadir 2 parametros query al final: ?from={CAULQUIERNUMEROVALIDO&limit={CUALQUIERNUMEROVALIDO} */
         this.router.get('/getNftGetSeries', this.getNftGetSeries);
-        // this.router.post('/getNftGetSeries', this.getNftGetSeries);
         
         /* Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}*/
         this.router.get('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
-        // this.router.post('/getNftGetSeriesSingle', this.getNftGetSeriesSingle);
 
         /* Añadir 1 parametro query al final: ?TokenSeriesId={CUALQUIERNUMEROVALIDO}*/
         this.router.get('/getNftTokensBySeries', this.getNftTokensBySeries);
-        //this.router.post('/getNftTokensBySeries', this.getNftTokensBySeries);
 
         this.router.get('/getLandingPageParas', this.getLandingPageParas);
-        //this.router.post('/getLandingPageParas', this.getLandingPageParas);
 
         this.router.get('/getLandingPageMintbase', this.getLandingPageMintbase);
-        //this.router.post('/getLandingPageMintbase', this.getLandingPageMintbase);
 
         this.router.get('/getMostSelledCollections/:limit', this.getMostSelledCollectionsParas);
     }

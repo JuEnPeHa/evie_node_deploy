@@ -91,3 +91,16 @@ Recibe: El nombre de un contrato
 Devuelve: El número de tokens que tiene dicho marketplace.
 
 ```
+Mainnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/mainnet/getTokens?account=jeph.near&receivedContract=x.paras.near
+```
+```
+Testnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/testnet/getTokens?account=jeph.testnet&receivedContract=paras-token-v2.testnet
+```
+Recibe: El nombre de una cuenta y un contrato
+?account=jeph.near&receivedContract=x.paras.near
+Devuelve: Una lista de tokens que tiene la cuenta indicada en el contrato indicado.
+
+```
+Mainnet:
