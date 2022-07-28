@@ -53,4 +53,15 @@ NOTA: Diferente función pero igual resultado que la anterior
 Recibe: El id de la serie de tokens
 ?TokenSeriesId=500
 Devuelve: La información de la serie de tokens indicada
-
+    
+```
+Mainnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/mainnet/getNftGetSeries?from=50&limit=10
+```
+```
+Testnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/testnet/getNftGetSeries?from=50&limit=10
+```
+Recibe: Un número From y un número Limit
+?from=50&limit=10
+Devuelve: Una lista paginada de Colecciones.
