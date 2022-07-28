@@ -65,3 +65,20 @@ https://evienode.juanenriqueenr4.repl.co/api/near/testnet/getNftGetSeries?from=5
 Recibe: Un número From y un número Limit
 ?from=50&limit=10
 Devuelve: Una lista paginada de Colecciones.
+ 
+```
+Mainnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/mainnet/getMetadata?account=jeph.near
+```
+```
+Testnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/testnet/getMetadata?account=jeph.testnet
+```
+Recibe: El nombre de una cuenta
+?account=jeph.near
+Devuelve: Los tokens que tenga la cuenta indicada en los marketplaces ya precargados.
+
+```
+
+```
+
