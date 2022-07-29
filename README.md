@@ -104,3 +104,14 @@ Devuelve: Una lista de tokens que tiene la cuenta indicada en el contrato indica
 
 ```
 Mainnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/mainnet/getSupplyForOwner?account=jeph.near&receivedContract=x.paras.near
+```
+```
+Testnet:
+https://evienode.juanenriqueenr4.repl.co/api/near/testnet/getSupplyForOwner?account=jeph.testnet&receivedContract=paras-token-v2.testnet
+```
+Recibe: El nombre de una cuenta y un contrato
+?account=jeph.near&receivedContract=x.paras.near
+Devuelve: El número de tokens que tiene la cuenta indicada en el contrato indicado.
+
+```
