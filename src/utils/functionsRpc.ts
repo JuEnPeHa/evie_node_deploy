@@ -1,5 +1,4 @@
 import * as nearAPI from 'near-api-js';
-import { keyStores, Near, Account } from 'near-api-js';
 import { getConfig } from "../config";
 import statsParasAPI from '../models/StatsParasAPI';
 import {ParasStatsAPIResponse, ParasStatsArray} from '../interfaces/parasStatsResponse';
@@ -8,13 +7,14 @@ import { ParasCollectionAPIResponse, ParasCollectionArray } from '../interfaces/
 import { DataEvie, EvieAPICollectionResponse, ResultEvie } from '../interfaces/evieResponse';
 import { request, gql } from 'graphql-request'
 import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollectionResponse';
-import { getNearContract, nearAccountCallerMainnet } from '../server';
+import { getNearContract, nearAccountCallerMainnet, nearAccountCallerTestnet } from '../server';
 import { Metadata, NFTData } from '../interfaces/nftData';
 import higgsfieldAPI from '../models/HiggsfieldAPI';
 import { HiggsfieldCollectionResponse, HiggsfieldCollectionResponseArray } from '../interfaces/higgsfieldResponse';
 import { MintbaseNFTData } from '../interfaces/mintbaseNftData';
 import axios, { Axios, AxiosInstance } from 'axios';
 import { ArweaveNftResponse } from '../interfaces/arweaveNftResponce';
+import { CartItem, PreCartItem } from '../interfaces/cartItem';
 
 const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'testnet');
 
@@ -38,10 +38,12 @@ export function getMarketplacesClean(listNftMarketplacesRaw: string[]): string[]
 };
 
 export async function nftMetadata(
-    account: string,
-    nearAPI: nearAPI.Account,
+    contractForInteraction: string,
+    //nearAPI: nearAPI.Account,
 ) {
-    const contract = getNearContract(nearAPI, account, 'nft_metadata');
+    const mainnet: boolean = !contractForInteraction.includes(".testnet") && contractForInteraction.includes(".near");
+    const accountCaller = mainnet ? await nearAccountCallerMainnet : await nearAccountCallerTestnet;
+    const contract = getNearContract(accountCaller, contractForInteraction, 'nft_metadata');
     // @ts-ignore
     const metadata = await contract.nft_metadata({});
     console.log(metadata);
@@ -195,7 +197,7 @@ export async function getMostSelledCollectionsPrivate(
     limit: number,
 ) {
     const collectionsRAW = await getParasCollectionsWithAPI(limit);
-    const preUrl = await FunctionsRpc.nftMetadata("x.paras.near", await nearAccountCallerMainnet);
+    const preUrl = await FunctionsRpc.nftMetadata("x.paras.near");
     console.log("collectionsRAW");
     console.log(collectionsRAW);
     let dataEvie: DataEvie = {
@@ -351,6 +353,44 @@ export async function getNftTokensBySeriesPrivate(
 export async function graphqlQuery(query: string) {
     const resp = await request<MintbaseStoresCollection>('https://mintbase-mainnet.hasura.app/v1/graphql', query)
     return resp;
+}
+
+export async function getPriceParasNft(
+    contractForInteraction: string,
+    TokenSeriesId: string,
+    //mainnet: boolean,
+): Promise<number> {
+    const mainnet: boolean = !contractForInteraction.includes(".testnet") && contractForInteraction.includes(".near");
+    const accountCaller = mainnet ? await nearAccountCallerMainnet : await nearAccountCallerTestnet;
+    const contract = getNearContract(accountCaller, contractForInteraction, 'nft_get_series_price');
+    // @ts-ignore
+    const price: number = await contract.nft_get_series_price({
+        "token_series_id": TokenSeriesId,
+    });
+    return price;
+}
+
+export async function getCartItems(
+    user: string,
+) {
+    const mainnet: boolean = !user.includes(".testnet") && user.includes(".near");
+    const accountCaller = mainnet ? await nearAccountCallerMainnet : await nearAccountCallerTestnet;
+    const contract = getNearContract(accountCaller, user, 'get_cart_items');
+    // @ts-ignore
+    const preCartItems: PreCartItem[] = await contract.get_cart_items({
+        "user": user,
+    });
+    const cartItems: CartItem[] = [];
+    for (let index = 0; index < preCartItems.length; index++) {
+        const element = preCartItems[index];
+        const price: number = await getPriceParasNft(element.contractId, element.tokenId);
+        cartItems.push({
+            tokenId: element.tokenId,
+            contractId: element.contractId,
+            price: price,
+        });
+    }
+    return cartItems;
 }
 
 };

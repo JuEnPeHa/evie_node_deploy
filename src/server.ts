@@ -13,6 +13,7 @@ import * as nearAPI from 'near-api-js';
 import NEARRoutesMainnet from './routes/NEARRoutesMainnet';
 import NEARRoutesTestnet from './routes/NEARRoutesTestnet';
 import { FunctionsRpc } from './utils/functionsRpc';
+import NEARRoutes from './routes/NEARRoutes';
 
 var functionsMainnet = require('./routes/NEARRoutesMainnet');
 export const nearAccountCallerMainnet: nearAPI.Account = functionsMainnet.nearAccountCallerMainnet();
@@ -68,14 +69,16 @@ class Server {
         this.app.use('/api/users', UserRoutes);
         this.app.use('/api/near/mainnet', NEARRoutesMainnet);
         this.app.use('/api/near/testnet', NEARRoutesTestnet);
+        this.app.use('/api/near', NEARRoutes);
     }
 
     async start() {
         this.app.listen(this.app.get('port'), () => {
             console.log('Server on port', this.app.get('port'));
         });
-        FunctionsRpc.nftMetadata("x.paras.near", await nearAccountCallerMainnet);
-
+        //FunctionsRpc.nftMetadata("x.paras.near", await nearAccountCallerMainnet);
+        
+        console.log("Server started + ", await FunctionsRpc.getPriceParasNft("paras-token-v2.testnet", "1604"));
     }
 
 }

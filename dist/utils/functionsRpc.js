@@ -29,8 +29,10 @@ var FunctionsRpc;
     }
     FunctionsRpc.getMarketplacesClean = getMarketplacesClean;
     ;
-    async function nftMetadata(account, nearAPI) {
-        const contract = (0, server_1.getNearContract)(nearAPI, account, 'nft_metadata');
+    async function nftMetadata(contractForInteraction) {
+        const mainnet = !contractForInteraction.includes(".testnet") && contractForInteraction.includes(".near");
+        const accountCaller = mainnet ? await server_1.nearAccountCallerMainnet : await server_1.nearAccountCallerTestnet;
+        const contract = (0, server_1.getNearContract)(accountCaller, contractForInteraction, 'nft_metadata');
         // @ts-ignore
         const metadata = await contract.nft_metadata({});
         console.log(metadata);
@@ -167,7 +169,7 @@ var FunctionsRpc;
     //receivedAccount: string,
     limit) {
         const collectionsRAW = await getParasCollectionsWithAPI(limit);
-        const preUrl = await FunctionsRpc.nftMetadata("x.paras.near", await server_1.nearAccountCallerMainnet);
+        const preUrl = await FunctionsRpc.nftMetadata("x.paras.near");
         console.log("collectionsRAW");
         console.log(collectionsRAW);
         let dataEvie = {
@@ -316,6 +318,38 @@ var FunctionsRpc;
         return resp;
     }
     FunctionsRpc.graphqlQuery = graphqlQuery;
+    async function getPriceParasNft(contractForInteraction, TokenSeriesId) {
+        const mainnet = !contractForInteraction.includes(".testnet") && contractForInteraction.includes(".near");
+        const accountCaller = mainnet ? await server_1.nearAccountCallerMainnet : await server_1.nearAccountCallerTestnet;
+        const contract = (0, server_1.getNearContract)(accountCaller, contractForInteraction, 'nft_get_series_price');
+        // @ts-ignore
+        const price = await contract.nft_get_series_price({
+            "token_series_id": TokenSeriesId,
+        });
+        return price;
+    }
+    FunctionsRpc.getPriceParasNft = getPriceParasNft;
+    async function getCartItems(user) {
+        const mainnet = !user.includes(".testnet") && user.includes(".near");
+        const accountCaller = mainnet ? await server_1.nearAccountCallerMainnet : await server_1.nearAccountCallerTestnet;
+        const contract = (0, server_1.getNearContract)(accountCaller, user, 'get_cart_items');
+        // @ts-ignore
+        const preCartItems = await contract.get_cart_items({
+            "user": user,
+        });
+        const cartItems = [];
+        for (let index = 0; index < preCartItems.length; index++) {
+            const element = preCartItems[index];
+            const price = await getPriceParasNft(element.contractId, element.tokenId);
+            cartItems.push({
+                tokenId: element.tokenId,
+                contractId: element.contractId,
+                price: price,
+            });
+        }
+        return cartItems;
+    }
+    FunctionsRpc.getCartItems = getCartItems;
 })(FunctionsRpc = exports.FunctionsRpc || (exports.FunctionsRpc = {}));
 ;
 // async function getParasCollectionsWithAPI(limit: number) {
