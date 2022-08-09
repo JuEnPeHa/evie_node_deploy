@@ -12,7 +12,7 @@ class NEARRoutes {
     }
     routes() {
         //Añadir parametro user: ?user=
-        this.router.get('/getCart', (req, res) => {
+        this.router.get('/Cart', (req, res) => {
             var _a;
             const user = (_a = req.query.user) === null || _a === void 0 ? void 0 : _a.toString();
             if (typeof user === 'undefined') {
@@ -21,6 +21,10 @@ class NEARRoutes {
             else {
                 functionsRpc_1.FunctionsRpc.getCartItems(user);
             }
+        });
+        //Añadir parametro account: ?account=
+        //Añadir parametro contract: &contract=
+        this.router.get('/NftMetadata', (req, res) => {
         });
     }
 }

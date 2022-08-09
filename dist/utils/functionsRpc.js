@@ -102,7 +102,7 @@ var FunctionsRpc;
             //listExistentIds.push(nftSeries);
             for (let index = 0; index < nftSeries.length; index++) {
                 const element = nftSeries[index];
-                let preToken = await getNftTokensBySeriesPrivate(element.toString(), await account);
+                let preToken = await getNftTokensBySeriesPrivate('x.paras.near', element.toString());
                 if (preToken != "") {
                     listLandingPage.push(preToken);
                 }
@@ -292,13 +292,11 @@ var FunctionsRpc;
     }
     FunctionsRpc.getNftGetSeriesIdsPrivate = getNftGetSeriesIdsPrivate;
     ;
-    async function getNftTokensBySeriesPrivate(
-    //receivedAccount: string, 
-    TokenSeriesId, account) {
+    async function getNftTokensBySeriesPrivate(receivedContract, TokenSeriesId) {
         console.log(TokenSeriesId);
-        //const account = await near.account(receivedAccount);
+        const accountCaller = await getInstanceAccountCaller(receivedContract);
         let tokens = "";
-        const contract = (0, server_1.getNearContract)(await account, "x.paras.near", 'nft_tokens_by_series');
+        const contract = (0, server_1.getNearContract)(accountCaller, receivedContract, 'nft_tokens_by_series');
         // @ts-ignore
         await contract.nft_tokens_by_series({
             "token_series_id": TokenSeriesId,
