@@ -317,10 +317,8 @@ var FunctionsRpc;
         const resp = await (0, graphql_request_1.request)('https://mintbase-mainnet.hasura.app/v1/graphql', query);
         return resp;
     }
-    FunctionsRpc.graphqlQuery = graphqlQuery;
     async function getPriceParasNft(contractForInteraction, TokenSeriesId) {
-        const mainnet = !contractForInteraction.includes(".testnet") && contractForInteraction.includes(".near");
-        const accountCaller = mainnet ? await server_1.nearAccountCallerMainnet : await server_1.nearAccountCallerTestnet;
+        const accountCaller = await getInstanceAccountCaller(contractForInteraction);
         const contract = (0, server_1.getNearContract)(accountCaller, contractForInteraction, 'nft_get_series_price');
         // @ts-ignore
         const price = await contract.nft_get_series_price({
@@ -329,9 +327,12 @@ var FunctionsRpc;
         return price;
     }
     FunctionsRpc.getPriceParasNft = getPriceParasNft;
+    async function getInstanceAccountCaller(accountOrContract) {
+        const mainnet = !accountOrContract.includes(".testnet") && accountOrContract.includes(".near");
+        return mainnet ? await server_1.nearAccountCallerMainnet : await server_1.nearAccountCallerTestnet;
+    }
     async function getCartItems(user) {
-        const mainnet = !user.includes(".testnet") && user.includes(".near");
-        const accountCaller = mainnet ? await server_1.nearAccountCallerMainnet : await server_1.nearAccountCallerTestnet;
+        const accountCaller = await getInstanceAccountCaller(user);
         const contract = (0, server_1.getNearContract)(accountCaller, user, 'get_cart_items');
         // @ts-ignore
         const preCartItems = await contract.get_cart_items({
@@ -352,34 +353,3 @@ var FunctionsRpc;
     FunctionsRpc.getCartItems = getCartItems;
 })(FunctionsRpc = exports.FunctionsRpc || (exports.FunctionsRpc = {}));
 ;
-// async function getParasCollectionsWithAPI(limit: number) {
-//     const { data } = await parasAPI.get<ParasAPIResponse>('/top-users?__limit=' + limit);
-//     return data.data.collections;
-//     //console.log(data.data.buyers);
-//     //console.log(data.data.collections);
-//     //console.log(data.data.limit);
-//     //console.log(data.data.skip);
-//     //console.log(data.data.sellers);
-//     // console.log(resp.status);
-//     // console.log(resp.statusText);
-//     // console.log(resp.headers);
-//     // console.log(resp.config);
-//     // console.log(resp.request);
-//     // console.log(resp);
-// }
-// let contract_token_ids = [];
-// for (let i = 0; i < collectionsRAW.length; i++) {
-//     console.log(collectionsRAW[i].contract_token_ids[i]);
-//     for (let e = 0; e < collectionsRAW[i].contract_token_ids.length; e++) {
-//         const o = collectionsRAW[i].contract_token_ids[e];
-//         //console.log(o);
-//         let ascnsija = await getNftTokenPrivate(receivedAccount, "paras-token-v2.testnet", o);
-//         console.log(ascnsija);
-//     }
-// const e = collectionsRAW[i];
-// contract_token_ids.push(e.contract_token_ids[i]);
-// let ascnsija = await getNftTokenPrivate(receivedAccount, "paras-token-v2.testnet", e.contract_token_ids[i]);
-// console.log(ascnsija);
-// e.contract_token_ids = contract_token_ids;
-//}
-//return contract_token_ids;

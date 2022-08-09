@@ -123,7 +123,7 @@ export async function getLandingPageParasPrivate(
         //listExistentIds.push(nftSeries);
         for (let index = 0; index < nftSeries.length; index++) {
             const element = nftSeries[index];
-            let preToken = await getNftTokensBySeriesPrivate(element.toString(), await account);
+            let preToken = await getNftTokensBySeriesPrivate('x.paras.near', element.toString());
             if (preToken != "") {
                 listLandingPage.push(preToken);
             }
@@ -327,14 +327,13 @@ export async function getNftGetSeriesIdsPrivate(
 };
 
 export async function getNftTokensBySeriesPrivate(
-    //receivedAccount: string, 
+    receivedContract: string, 
     TokenSeriesId: string,
-    account: nearAPI.Account,
     ): Promise<string> {
     console.log(TokenSeriesId);
-      //const account = await near.account(receivedAccount);
+      const accountCaller = await getInstanceAccountCaller(receivedContract);
       let tokens: string = "";
-        const contract: nearAPI.Contract = getNearContract(await account, "x.paras.near", 'nft_tokens_by_series');
+        const contract: nearAPI.Contract = getNearContract(accountCaller, receivedContract, 'nft_tokens_by_series');
          // @ts-ignore
          await contract.nft_tokens_by_series({
              "token_series_id": TokenSeriesId,
@@ -350,7 +349,7 @@ export async function getNftTokensBySeriesPrivate(
             return tokens;
 };
 
-export async function graphqlQuery(query: string) {
+async function graphqlQuery(query: string) {
     const resp = await request<MintbaseStoresCollection>('https://mintbase-mainnet.hasura.app/v1/graphql', query)
     return resp;
 }
@@ -358,10 +357,8 @@ export async function graphqlQuery(query: string) {
 export async function getPriceParasNft(
     contractForInteraction: string,
     TokenSeriesId: string,
-    //mainnet: boolean,
 ): Promise<number> {
-    const mainnet: boolean = !contractForInteraction.includes(".testnet") && contractForInteraction.includes(".near");
-    const accountCaller = mainnet ? await nearAccountCallerMainnet : await nearAccountCallerTestnet;
+    const accountCaller = await getInstanceAccountCaller(contractForInteraction);
     const contract = getNearContract(accountCaller, contractForInteraction, 'nft_get_series_price');
     // @ts-ignore
     const price: number = await contract.nft_get_series_price({
@@ -370,17 +367,23 @@ export async function getPriceParasNft(
     return price;
 }
 
+async function getInstanceAccountCaller(
+    accountOrContract: string,
+) {
+    const mainnet: boolean = !accountOrContract.includes(".testnet") && accountOrContract.includes(".near");
+    return mainnet ? await nearAccountCallerMainnet : await nearAccountCallerTestnet;
+}
+
 export async function getCartItems(
     user: string,
 ) {
-    const mainnet: boolean = !user.includes(".testnet") && user.includes(".near");
-    const accountCaller = mainnet ? await nearAccountCallerMainnet : await nearAccountCallerTestnet;
+    const accountCaller = await getInstanceAccountCaller(user);
     const contract = getNearContract(accountCaller, user, 'get_cart_items');
     // @ts-ignore
     const preCartItems: PreCartItem[] = await contract.get_cart_items({
         "user": user,
     });
-    const cartItems: CartItem[] = [];
+    const cartItems: CartItem[] = [] as CartItem[];
     for (let index = 0; index < preCartItems.length; index++) {
         const element = preCartItems[index];
         const price: number = await getPriceParasNft(element.contractId, element.tokenId);
@@ -394,42 +397,3 @@ export async function getCartItems(
 }
 
 };
-
-
-
-
-
-// async function getParasCollectionsWithAPI(limit: number) {
-//     const { data } = await parasAPI.get<ParasAPIResponse>('/top-users?__limit=' + limit);
-//     return data.data.collections;
-//     //console.log(data.data.buyers);
-//     //console.log(data.data.collections);
-//     //console.log(data.data.limit);
-//     //console.log(data.data.skip);
-//     //console.log(data.data.sellers);
-//     // console.log(resp.status);
-//     // console.log(resp.statusText);
-//     // console.log(resp.headers);
-//     // console.log(resp.config);
-//     // console.log(resp.request);
-//     // console.log(resp);
-// }
-
-    // let contract_token_ids = [];
-    // for (let i = 0; i < collectionsRAW.length; i++) {
-    //     console.log(collectionsRAW[i].contract_token_ids[i]);
-    //     for (let e = 0; e < collectionsRAW[i].contract_token_ids.length; e++) {
-    //         const o = collectionsRAW[i].contract_token_ids[e];
-    //         //console.log(o);
-    //         let ascnsija = await getNftTokenPrivate(receivedAccount, "paras-token-v2.testnet", o);
-    //         console.log(ascnsija);
-    //     }
-        // const e = collectionsRAW[i];
-        // contract_token_ids.push(e.contract_token_ids[i]);
-        // let ascnsija = await getNftTokenPrivate(receivedAccount, "paras-token-v2.testnet", e.contract_token_ids[i]);
-        // console.log(ascnsija);
-        // e.contract_token_ids = contract_token_ids;
-    //}
-    //return contract_token_ids;
-
- 
