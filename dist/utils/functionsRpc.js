@@ -11,7 +11,7 @@ const graphql_request_1 = require("graphql-request");
 const server_1 = require("../server");
 const HiggsfieldAPI_1 = __importDefault(require("../models/HiggsfieldAPI"));
 const axios_1 = __importDefault(require("axios"));
-const { networkId, nodeUrl, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'testnet');
+const { networkId, nodeUrl, contractName, walletUrl, helperUrl } = (0, config_1.getConfig)(process.env.NODE_ENV || 'testnet');
 var FunctionsRpc;
 (function (FunctionsRpc) {
     function getMarketplacesClean(listNftMarketplacesRaw) {
@@ -294,7 +294,7 @@ var FunctionsRpc;
     ;
     async function getNftTokensBySeriesPrivate(receivedContract, TokenSeriesId) {
         console.log(TokenSeriesId);
-        const accountCaller = await getInstanceAccountCaller(receivedContract);
+        const accountCaller = await (0, server_1.getNearAccountInstance)(receivedContract);
         let tokens = "";
         const contract = (0, server_1.getNearContract)(accountCaller, receivedContract, 'nft_tokens_by_series');
         // @ts-ignore
@@ -316,8 +316,7 @@ var FunctionsRpc;
         return resp;
     }
     async function getPriceParasNft(contractForInteraction, TokenSeriesId) {
-        const accountCaller = await getInstanceAccountCaller(contractForInteraction);
-        const contract = (0, server_1.getNearContract)(accountCaller, contractForInteraction, 'nft_get_series_price');
+        const contract = (0, server_1.getNearContract)(await (0, server_1.getNearAccountInstance)(contractForInteraction), contractForInteraction, 'nft_get_series_price');
         // @ts-ignore
         const price = await contract.nft_get_series_price({
             "token_series_id": TokenSeriesId,
@@ -325,24 +324,25 @@ var FunctionsRpc;
         return price;
     }
     FunctionsRpc.getPriceParasNft = getPriceParasNft;
-    async function getInstanceAccountCaller(accountOrContract) {
-        const mainnet = !accountOrContract.includes(".testnet") && accountOrContract.includes(".near");
-        return mainnet ? await server_1.nearAccountCallerMainnet : await server_1.nearAccountCallerTestnet;
-    }
+    //     async function getInstanceAccountCaller(
+    //     accountOrContract: String,
+    // ): Promise<nearAPI.Account> {
+    //     }
     async function getCartItems(user) {
-        const accountCaller = await getInstanceAccountCaller(user);
-        const contract = (0, server_1.getNearContract)(accountCaller, user, 'get_cart_items');
+        const contract = (0, server_1.getNearContract)(await (0, server_1.getNearAccountInstance)(user), contractName, 'get_cart_items');
         // @ts-ignore
         const preCartItems = await contract.get_cart_items({
             "user": user,
         });
         const cartItems = [];
         for (let index = 0; index < preCartItems.length; index++) {
-            const element = preCartItems[index];
-            const price = await getPriceParasNft(element.contractId, element.tokenId);
+            if (preCartItems[index].token_id.includes(":")) {
+                preCartItems[index].token_id = preCartItems[index].token_id.split(":")[0];
+            }
+            const price = await getPriceParasNft(preCartItems[index].contract_id, preCartItems[index].token_id);
             cartItems.push({
-                tokenId: element.tokenId,
-                contractId: element.contractId,
+                token_id: preCartItems[index].token_id,
+                contract_id: preCartItems[index].contract_id,
                 price: price,
             });
         }

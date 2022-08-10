@@ -7,7 +7,7 @@ import { ParasCollectionAPIResponse, ParasCollectionArray } from '../interfaces/
 import { DataEvie, EvieAPICollectionResponse, ResultEvie } from '../interfaces/evieResponse';
 import { request, gql } from 'graphql-request'
 import { MintbaseStoresCollection } from '../interfaces/mintbaseStoresCollectionResponse';
-import { getNearContract, nearAccountCallerMainnet, nearAccountCallerTestnet } from '../server';
+import { getNearAccountInstance, getNearContract, nearAccountCallerMainnet, nearAccountCallerTestnet } from '../server';
 import { Metadata, NFTData } from '../interfaces/nftData';
 import higgsfieldAPI from '../models/HiggsfieldAPI';
 import { HiggsfieldCollectionResponse, HiggsfieldCollectionResponseArray } from '../interfaces/higgsfieldResponse';
@@ -16,7 +16,7 @@ import axios, { Axios, AxiosInstance } from 'axios';
 import { ArweaveNftResponse } from '../interfaces/arweaveNftResponce';
 import { CartItem, PreCartItem } from '../interfaces/cartItem';
 
-const { networkId, nodeUrl, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'testnet');
+const { networkId, nodeUrl, contractName, walletUrl, helperUrl } = getConfig(process.env.NODE_ENV || 'testnet');
 
 export module FunctionsRpc {
 
@@ -331,7 +331,7 @@ export async function getNftTokensBySeriesPrivate(
     TokenSeriesId: string,
     ): Promise<string> {
     console.log(TokenSeriesId);
-      const accountCaller = await getInstanceAccountCaller(receivedContract);
+      const accountCaller = await getNearAccountInstance(receivedContract);
       let tokens: string = "";
         const contract: nearAPI.Contract = getNearContract(accountCaller, receivedContract, 'nft_tokens_by_series');
          // @ts-ignore
@@ -357,39 +357,39 @@ async function graphqlQuery(query: string) {
 export async function getPriceParasNft(
     contractForInteraction: string,
     TokenSeriesId: string,
-): Promise<number> {
-    const accountCaller = await getInstanceAccountCaller(contractForInteraction);
-    const contract = getNearContract(accountCaller, contractForInteraction, 'nft_get_series_price');
+): Promise<string> {
+    const contract = getNearContract(await getNearAccountInstance(contractForInteraction), contractForInteraction, 'nft_get_series_price');
     // @ts-ignore
-    const price: number = await contract.nft_get_series_price({
+    const price: string = await contract.nft_get_series_price({
         "token_series_id": TokenSeriesId,
     });
     return price;
 }
 
-async function getInstanceAccountCaller(
-    accountOrContract: string,
-) {
-    const mainnet: boolean = !accountOrContract.includes(".testnet") && accountOrContract.includes(".near");
-    return mainnet ? await nearAccountCallerMainnet : await nearAccountCallerTestnet;
-}
+//     async function getInstanceAccountCaller(
+//     accountOrContract: String,
+// ): Promise<nearAPI.Account> {
+    
+//     }
+
 
 export async function getCartItems(
     user: string,
 ) {
-    const accountCaller = await getInstanceAccountCaller(user);
-    const contract = getNearContract(accountCaller, user, 'get_cart_items');
+    const contract = getNearContract(await getNearAccountInstance(user), contractName, 'get_cart_items');
     // @ts-ignore
     const preCartItems: PreCartItem[] = await contract.get_cart_items({
         "user": user,
     });
     const cartItems: CartItem[] = [] as CartItem[];
     for (let index = 0; index < preCartItems.length; index++) {
-        const element = preCartItems[index];
-        const price: number = await getPriceParasNft(element.contractId, element.tokenId);
+        if (preCartItems[index].token_id.includes(":")) {
+            preCartItems[index].token_id = preCartItems[index].token_id.split(":")[0];
+        }
+        const price: string = await getPriceParasNft(preCartItems[index].contract_id, preCartItems[index].token_id);
         cartItems.push({
-            tokenId: element.tokenId,
-            contractId: element.contractId,
+            token_id: preCartItems[index].token_id,
+            contract_id: preCartItems[index].contract_id,
             price: price,
         });
     }

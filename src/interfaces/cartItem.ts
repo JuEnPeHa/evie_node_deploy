@@ -1,7 +1,7 @@
 
 export interface PreCartItem {
-    tokenId: string;
-    contractId: string;
+    token_id: string;
+    contract_id: string;
 }
 
 export interface CartItem extends PreCartItem {

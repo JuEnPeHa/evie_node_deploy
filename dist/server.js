@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNearContract = exports.nearAccountCallerTestnet = exports.nearAccountCallerMainnet = void 0;
+exports.getNearAccountInstance = exports.getNearContract = exports.nearAccountCallerTestnet = exports.nearAccountCallerMainnet = void 0;
 const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 //import mongoose from 'mongoose';
@@ -39,7 +39,6 @@ const helmet_1 = __importDefault(require("helmet"));
 const nearAPI = __importStar(require("near-api-js"));
 const NEARRoutesMainnet_1 = __importDefault(require("./routes/NEARRoutesMainnet"));
 const NEARRoutesTestnet_1 = __importDefault(require("./routes/NEARRoutesTestnet"));
-const functionsRpc_1 = require("./utils/functionsRpc");
 const NEARRoutes_1 = __importDefault(require("./routes/NEARRoutes"));
 var functionsMainnet = require('./routes/NEARRoutesMainnet');
 exports.nearAccountCallerMainnet = functionsMainnet.nearAccountCallerMainnet();
@@ -55,6 +54,27 @@ const getNearContract = (account, contractForInteraction, method) => {
     return contract;
 };
 exports.getNearContract = getNearContract;
+const getNearAccountInstance = (account) => {
+    console.log("account_inside: " + account);
+    let mainnet = false;
+    if (typeof account === "string") {
+        if (account.includes(".near")) {
+            mainnet = true;
+            return mainnet ? exports.nearAccountCallerMainnet : exports.nearAccountCallerTestnet;
+        }
+        else if (account.includes(".testnet")) {
+            mainnet = false;
+            return mainnet ? exports.nearAccountCallerMainnet : exports.nearAccountCallerTestnet;
+        }
+        else {
+            throw new Error("Invalid account or contract");
+        }
+    }
+    else {
+        throw new Error("Invalid account or contract");
+    }
+};
+exports.getNearAccountInstance = getNearAccountInstance;
 // async function connectDB() {
 //     const MONGO_URI = 'mongodb+srv://efwcwwwwce:7sPtSf8mzuTAqfGx@cluster0.w0ka0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 //     const db = await mongoose.connect(MONGO_URI || process.env.MONGODB_URI).then(db => console.log('DB connected', db.connection.db.databaseName)).catch(err => console.log(err));
@@ -89,7 +109,7 @@ class Server {
             console.log('Server on port', this.app.get('port'));
         });
         //FunctionsRpc.nftMetadata("x.paras.near", await nearAccountCallerMainnet);
-        console.log("Server started + ", await functionsRpc_1.FunctionsRpc.getPriceParasNft("paras-token-v2.testnet", "1604"));
+        //console.log("Server started + ", await FunctionsRpc.getPriceParasNft("paras-token-v2.testnet", "1604"));
     }
 }
 const server = new Server();

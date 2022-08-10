@@ -37,6 +37,25 @@ export const getNearContract = (
             return contract;
 }
 
+export const getNearAccountInstance = (
+    account: string,
+): nearAPI.Account => {
+    console.log("account_inside: " + account);
+    let mainnet: boolean = false;
+    if (typeof account === "string") {
+    if (account.includes(".near")) {
+        mainnet = true;
+        return mainnet ? nearAccountCallerMainnet : nearAccountCallerTestnet;
+    } else if (account.includes(".testnet")) {
+        mainnet = false;
+        return mainnet ? nearAccountCallerMainnet : nearAccountCallerTestnet;
+    } else {
+        throw new Error("Invalid account or contract");
+    }} else {
+        throw new Error("Invalid account or contract");
+    }
+}
+
     // async function connectDB() {
     //     const MONGO_URI = 'mongodb+srv://efwcwwwwce:7sPtSf8mzuTAqfGx@cluster0.w0ka0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
     //     const db = await mongoose.connect(MONGO_URI || process.env.MONGODB_URI).then(db => console.log('DB connected', db.connection.db.databaseName)).catch(err => console.log(err));
@@ -78,7 +97,7 @@ class Server {
         });
         //FunctionsRpc.nftMetadata("x.paras.near", await nearAccountCallerMainnet);
         
-        console.log("Server started + ", await FunctionsRpc.getPriceParasNft("paras-token-v2.testnet", "1604"));
+        //console.log("Server started + ", await FunctionsRpc.getPriceParasNft("paras-token-v2.testnet", "1604"));
     }
 
 }
