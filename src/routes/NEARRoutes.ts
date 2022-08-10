@@ -15,12 +15,16 @@ class NEARRoutes {
 
     routes() {
         //Añadir parametro user: ?user=
-        this.router.get('/Cart', (req, res) => {
+        this.router.get('/Cart', async (req, res) => {
             const user = req.query.user?.toString();
             if (typeof user === 'undefined') {
                 res.status(400).send('User is not defined');
+            } else if (user === '') {
+                res.status(400).send('User is empty');
+         } else if (typeof user === 'string') {
+            res.status(200).json(await FunctionsRpc.getCartItems(user));
             } else {
-                FunctionsRpc.getCartItems(user);
+                console.log('User is not a string + ' + user);
             }
         });
         //Añadir parametro account: ?account=
