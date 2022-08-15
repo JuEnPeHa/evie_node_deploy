@@ -23,7 +23,6 @@ class NEARRoutes {
             }
             else if (typeof user === 'string') {
                 res.status(200).json(await functionsRpc_1.FunctionsRpc.getCartItems(user));
-                //console.log(await FunctionsRpc.getCartItems(user));
             }
             else {
                 console.log('User is not a string + ' + user);
